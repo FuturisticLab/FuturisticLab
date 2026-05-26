@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Space Portfolio - Neural Network</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@300;400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="universe">
+        <div id="neural-network"></div>
+    </div>
+    <div id="custom-cursor"></div>
+    <div id="info-panel">
+        <h3>🌌 Quantum Space Portfolio</h3>
+<img src="C:\Users\jmarc\Technology\Web Projects\Modal\assets\images\untitled.png" class="infopanelimg" alt="Photo">
+        <p>Navigate through an interconnected cosmos of quantum projects. Each node pulses with LED energy, connected by data streams flowing through spacetime.</p>
+        <br>
+        <p><strong>🚀 Navigation:</strong></p>
+        <p>• Mouse: Control 3D space drift</p>
+        <p>• Click nodes: Access project data</p>
+        <p>• Auto-rotate: Orbital view mode</p>
+        <p>• Space: Toggle rotation</p>
+        <br>
+        <p><strong>⚡ System:</strong> Quantum Neural Network</p>
+    </div>
+    <div class="stats-display">
+        <div>🔷 ACTIVE NODES: <span id="node-count">0</span></div>
+        <div>⚡ DATA STREAMS: <span id="connection-count">0</span></div>
+        <div>🌌 QUANTUM STATUS: <span style="color: #00d4ff; text-shadow: 0 0 5px #00d4ff;">ONLINE</span></div>
+        <div>🚀 DIMENSION: <span style="color: #00ccff;">SPACE-3D</span></div>
+    </div>
+    <div id="controls">
+        <button class="control-btn" onclick="toggleRotation()">Auto-Rotate</button>
+        <button class="control-btn" onclick="toggleInfo()">Info</button>
+        <button class="control-btn" onclick="randomizeNetwork()">Randomize</button>
+        <button class="control-btn" onclick="resetView()">Reset View</button>
+    </div>
+    <div id="project-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 class="modal-title" id="modal-title">Project Title</h2>
+            <p id="modal-description">Project description will appear here...</p>
+            <br>
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                <button class="control-btn" onclick="window.open('#', '_blank')">View Live</button>
+                <button class="control-btn" onclick="window.open('#', '_blank')">GitHub</button>
+            </div>
+        </div>
+    </div>
+    <script src="assets/js/script.js"></script>
+</body>
+</html>
