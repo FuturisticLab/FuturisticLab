@@ -114,7 +114,21 @@ document.addEventListener('DOMContentLoaded', () => {
         { title: 'VR Experience', color: '#004dff' },
         { title: 'IoT Dashboard', color: '#00b3ff' },
         { title: 'Neural Compiler', color: '#0080ff' },
-        { title: 'Coming Soon', color: '#004dff' }
+        { title: 'Coming Soon 1', color: '#004dff' },
+        { title: 'Coming Soon 2', color: '#004dff' },
+        { title: 'Coming Soon 3', color: '#004dff' },
+        { title: 'Coming Soon 4', color: '#004dff' },
+        { title: 'Coming Soon 5', color: '#004dff' },
+        { title: 'Coming Soon 6', color: '#004dff' },
+        { title: 'Coming Soon 7', color: '#004dff' },
+        { title: 'Coming Soon 8', color: '#004dff' },
+        { title: 'Coming Soon 9', color: '#004dff' },
+        { title: 'Coming Soon 10', color: '#004dff' },
+        { title: 'Coming Soon 11', color: '#004dff' },
+        { title: 'Coming Soon 12', color: '#004dff' },
+        { title: 'Coming Soon 13', color: '#004dff' },
+        { title: 'Coming Soon 14', color: '#004dff' },
+        { title: 'Coming Soon 15', color: '#004dff' }
     ];
 
     const articles = {
@@ -343,8 +357,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     Math.pow(nodes[i].y - nodes[j].y, 2) +
                     Math.pow(nodes[i].z - nodes[j].z, 2)
                 );
-                // Connect if within distance
-                if (distance < 450 && Math.random() > 0.45) {
+                
+                // Keep connection lines looking clean and constellation-like (density-optimized)
+                const maxDist = nodes.length > 15 ? 320 : 450;
+                const probability = nodes.length > 15 ? 0.12 : 0.45;
+                
+                if (distance < maxDist && Math.random() < probability) {
                     createConnection(nodes[i], nodes[j], containerRect);
                 }
             }
@@ -571,8 +589,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openModal(projectTitle) {
-        if (articles[projectTitle] && modal) {
-            loadArticle(projectTitle);
+        let titleKey = projectTitle;
+        // Fallback for "Coming Soon X" to reuse the "Coming Soon" article content
+        if (projectTitle.startsWith('Coming Soon') && !articles[projectTitle]) {
+            titleKey = 'Coming Soon';
+        }
+
+        if (articles[titleKey] && modal) {
+            loadArticle(titleKey);
+            
+            // Override the header title inside the modal to match the clicked node's title
+            const modalTitleEl = modalContent.querySelector('.article-title');
+            if (modalTitleEl) {
+                modalTitleEl.textContent = projectTitle;
+            }
+            
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
