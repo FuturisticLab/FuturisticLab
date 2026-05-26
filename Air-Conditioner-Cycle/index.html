@@ -1,0 +1,2478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive AC Refrigerant Cycle Telemetry Console - Thermodynamic simulation, Pressure-Enthalpy (p-h) chart, fault diagnostics, and synthesized audio.">
+    <meta name="keywords" content="air conditioning, refrigerant cycle, thermodynamics, HVAC simulator, refrigeration, p-h diagram, engineering simulator">
+    <meta name="author" content="Antigravity HVAC Lab">
+    <title>NEXUS HVAC // Refrigerant Cycle Telemetry Console</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-primary: #060814;
+            --bg-secondary: #0e1329;
+            --accent-cyan: #00f3ff;      /* Low pressure vapor / Cold */
+            --accent-magenta: #ff0055;   /* High pressure vapor / Hot */
+            --accent-amber: #ffb700;     /* High pressure liquid / Warm */
+            --accent-purple: #a124ff;    /* Low pressure mix / Valve */
+            --accent-green: #39ff14;     /* Normal / OK / Success */
+            --text-primary: #f0f3ff;
+            --text-secondary: #8a99ad;
+            --text-dark: #4e5d78;
+            --glass-bg: rgba(14, 19, 41, 0.65);
+            --glass-border: rgba(0, 243, 255, 0.15);
+            --glow-cyan: 0 0 10px rgba(0, 243, 255, 0.4);
+            --glow-magenta: 0 0 10px rgba(ff, 0, 85, 0.4);
+            --font-display: 'Orbitron', monospace;
+            --font-sans: 'Outfit', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: radial-gradient(circle at 50% 50%, #0d1230 0%, var(--bg-primary) 100%);
+            background-image: 
+                radial-gradient(circle at 50% 50%, #0d1230 0%, var(--bg-primary) 100%),
+                linear-gradient(rgba(0, 243, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 35px 35px, 35px 35px;
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Panel styles */
+        .glass-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(0, 243, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(0, 243, 255, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 243, 255, 0.08), inset 0 0 16px rgba(0, 243, 255, 0.08);
+        }
+
+        /* Layout Grid */
+        .app-container {
+            max-width: 1680px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 310px 1fr 390px;
+            gap: 15px;
+        }
+
+        /* Header Style */
+        header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            border-bottom: 2px solid rgba(0, 243, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), var(--accent-magenta), transparent);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .hud-status-light {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
+            animation: pulse-green 1.5s infinite;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { opacity: 0.5; box-shadow: 0 0 4px var(--accent-green); }
+            50% { opacity: 1; box-shadow: 0 0 12px var(--accent-green); }
+        }
+
+        .hud-status-light.warning {
+            background-color: var(--accent-amber);
+            box-shadow: 0 0 10px var(--accent-amber);
+            animation: pulse-amber 1s infinite;
+        }
+
+        @keyframes pulse-amber {
+            0%, 100% { opacity: 0.5; box-shadow: 0 0 4px var(--accent-amber); }
+            50% { opacity: 1; box-shadow: 0 0 12px var(--accent-amber); }
+        }
+
+        .hud-status-light.danger {
+            background-color: var(--accent-magenta);
+            box-shadow: 0 0 10px var(--accent-magenta);
+            animation: pulse-red 0.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { opacity: 0.4; box-shadow: 0 0 4px var(--accent-magenta); }
+            50% { opacity: 1; box-shadow: 0 0 14px var(--accent-magenta); }
+        }
+
+        .logo-text h1 {
+            font-family: var(--font-display);
+            font-size: 1.4em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #fff 0%, var(--accent-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+
+        .logo-text span {
+            font-size: 0.75em;
+            color: var(--text-secondary);
+            font-family: var(--font-display);
+            letter-spacing: 1px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .star-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+
+        .star-button:hover {
+            background: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            color: var(--bg-primary);
+            box-shadow: var(--glow-cyan);
+            transform: translateY(-1px);
+        }
+
+        .hud-badge {
+            background: rgba(0, 243, 255, 0.08);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            font-family: var(--font-display);
+            font-size: 0.8em;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .hud-badge:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+            box-shadow: var(--glow-cyan);
+        }
+
+        /* Sidebar - Simulation Parameters */
+        .sidebar-left {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .panel-header {
+            padding: 12px 18px;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-header h2 {
+            font-family: var(--font-display);
+            font-size: 0.95em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-body {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Controls / Sliders */
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .control-label {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-label span.value {
+            color: var(--accent-cyan);
+            font-family: var(--font-display);
+            font-weight: 700;
+        }
+
+        .slider-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            transition: background 0.3s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 6px var(--accent-cyan);
+            cursor: pointer;
+            transition: transform 0.1s, background 0.3s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Selector Grid */
+        .selector-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .selector-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-family: var(--font-display);
+            font-size: 0.75em;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .selector-btn:hover {
+            border-color: rgba(0, 243, 255, 0.3);
+            background: rgba(0, 243, 255, 0.03);
+            color: var(--text-primary);
+        }
+
+        .selector-btn.active {
+            background: rgba(0, 243, 255, 0.1);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            box-shadow: inset 0 0 8px rgba(0, 243, 255, 0.2);
+            text-shadow: 0 0 6px rgba(0, 243, 255, 0.4);
+        }
+
+        /* Diagnostic Faults Panel */
+        .fault-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .fault-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.8em;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .fault-btn:hover {
+            border-color: rgba(255, 183, 0, 0.4);
+            background: rgba(255, 183, 0, 0.03);
+        }
+
+        .fault-btn.active {
+            border-color: var(--accent-amber);
+            background: rgba(255, 183, 0, 0.1);
+            box-shadow: inset 0 0 8px rgba(255, 183, 0, 0.2);
+        }
+
+        .fault-btn.active .fault-indicator {
+            background-color: var(--accent-amber);
+            box-shadow: 0 0 8px var(--accent-amber);
+        }
+
+        .fault-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        /* Central Viewport - Interactive SVG Schematic */
+        .viewport-center {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .schematic-wrapper {
+            position: relative;
+            aspect-ratio: 8 / 5;
+            min-height: 480px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .schematic-svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.6));
+        }
+
+        /* SVG Inner Component Styles */
+        .svg-comp-box {
+            fill: rgba(14, 19, 41, 0.8);
+            stroke: rgba(0, 243, 255, 0.2);
+            stroke-width: 2;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .svg-comp-box:hover {
+            stroke: var(--accent-cyan);
+            fill: rgba(0, 243, 255, 0.05);
+        }
+
+        .svg-comp-box.active {
+            stroke: var(--accent-cyan);
+            fill: rgba(0, 243, 255, 0.1);
+            stroke-width: 3;
+            filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.3));
+        }
+
+        .coil-line {
+            fill: none;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 3px currentColor);
+        }
+
+        .pipe-line {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0.85;
+            transition: stroke 0.5s;
+        }
+
+        .pipe-flow {
+            fill: none;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 8 16;
+            stroke-linejoin: round;
+            animation: flowAnimation 2s linear infinite;
+        }
+
+        @keyframes flowAnimation {
+            to {
+                stroke-dashoffset: -40;
+            }
+        }
+
+        .fan-blade {
+            transform-origin: center;
+            transition: transform 0.1s linear;
+        }
+
+        /* Hover Data Readouts in SVG */
+        .telemetry-node {
+            cursor: help;
+        }
+
+        .telemetry-node:hover .node-circle {
+            stroke: #fff;
+            fill: var(--accent-cyan);
+        }
+
+        /* Ambient Room Label Overlays */
+        .ambient-card {
+            position: absolute;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: var(--font-display);
+            font-size: 0.75em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ambient-card.indoor {
+            bottom: 25px;
+            left: 25px;
+            background: rgba(0, 243, 255, 0.15);
+            border-color: rgba(0, 243, 255, 0.3);
+            color: var(--accent-cyan);
+        }
+
+        .ambient-card.outdoor {
+            top: 25px;
+            right: 25px;
+            background: rgba(255, 0, 85, 0.15);
+            border-color: rgba(255, 0, 85, 0.3);
+            color: var(--accent-magenta);
+        }
+
+        .frost-overlay {
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: none;
+        }
+
+        .frost-overlay.active {
+            opacity: 0.65;
+        }
+
+        /* Play Deck / Deck Controls */
+        .deck-controls {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .control-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border-radius: 6px;
+            padding: 10px 18px;
+            font-family: var(--font-display);
+            font-size: 0.8em;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+        }
+
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-action.primary {
+            background: rgba(0, 243, 255, 0.1);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .btn-action.primary:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .btn-action.danger {
+            background: rgba(255, 0, 85, 0.1);
+            border-color: var(--accent-magenta);
+            color: var(--accent-magenta);
+        }
+
+        .btn-action.danger:hover {
+            background: var(--accent-magenta);
+            color: var(--text-primary);
+            box-shadow: var(--glow-magenta);
+        }
+
+        /* Right Panel - Telemetry & p-h Chart */
+        .sidebar-right {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Live Telemetry Card Grid */
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .telemetry-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .telemetry-card .t-label {
+            font-size: 0.7em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .telemetry-card .t-value {
+            font-family: var(--font-display);
+            font-size: 1.35em;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        /* Canvas Chart Container */
+        .chart-container {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #phChart {
+            background: #04060e;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            width: 100%;
+            height: 220px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        /* Educational Stage Explanation */
+        .info-panel-body {
+            padding: 18px;
+            max-height: 250px;
+            overflow-y: auto;
+            font-size: 0.88em;
+            line-height: 1.6;
+        }
+
+        .stage-detail {
+            display: none;
+            animation: paneFade 0.4s ease forwards;
+        }
+
+        .stage-detail.active {
+            display: block;
+        }
+
+        @keyframes paneFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stage-detail h3 {
+            font-family: var(--font-display);
+            color: var(--accent-cyan);
+            font-size: 1.05em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-left: 3px solid var(--accent-cyan);
+            padding-left: 10px;
+        }
+
+        .stage-state-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 12px 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            font-size: 0.85em;
+        }
+
+        .stage-state-box div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stage-state-box span.lbl {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .stage-state-box span.val {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .fun-fact-badge {
+            background: linear-gradient(90deg, rgba(161, 36, 255, 0.1), rgba(0, 243, 255, 0.05));
+            border-left: 3px solid var(--accent-purple);
+            padding: 10px;
+            border-radius: 0 6px 6px 0;
+            margin-top: 15px;
+            font-size: 0.85em;
+            font-style: italic;
+            color: #d1d5db;
+        }
+
+        /* Quiz & Alerts Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(3, 5, 12, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 580px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 243, 255, 0.25);
+            box-shadow: 0 20px 50px rgba(0, 243, 255, 0.15);
+            animation: modalSlideIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: scale(0.9) translateY(-30px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 15px 25px;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-family: var(--font-display);
+            font-size: 1.1em;
+            letter-spacing: 1px;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+        }
+
+        .close-btn {
+            font-size: 1.5em;
+            cursor: pointer;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: var(--accent-magenta);
+        }
+
+        .quiz-container {
+            padding: 25px;
+        }
+
+        .quiz-q-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .quiz-q-card.active {
+            display: block;
+        }
+
+        .quiz-q-card h3 {
+            font-size: 1em;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            color: var(--text-primary);
+        }
+
+        .quiz-opts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-opt-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 12px 18px;
+            font-size: 0.9em;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .quiz-opt-btn:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 243, 255, 0.05);
+        }
+
+        .quiz-opt-btn.correct {
+            border-color: var(--accent-green);
+            background: rgba(57, 255, 20, 0.08);
+            color: var(--accent-green);
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.1);
+        }
+
+        .quiz-opt-btn.incorrect {
+            border-color: var(--accent-magenta);
+            background: rgba(255, 0, 85, 0.08);
+            color: var(--accent-magenta);
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.1);
+        }
+
+        .quiz-score-summary {
+            text-align: center;
+            padding: 30px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .quiz-score-num {
+            font-family: var(--font-display);
+            font-size: 3em;
+            font-weight: 900;
+            color: var(--accent-cyan);
+            text-shadow: var(--glow-cyan);
+        }
+
+        /* Comparison Modal styles */
+        .comparison-layout {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .comp-card-hud {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .comp-card-hud h3 {
+            font-family: var(--font-display);
+            font-size: 1em;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comp-card-hud.inside h3 {
+            color: var(--accent-cyan);
+        }
+
+        .comp-card-hud.outside h3 {
+            color: var(--accent-magenta);
+        }
+
+        .comp-card-hud ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
+
+        .comp-card-hud li {
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .comp-card-hud li::before {
+            content: '⚡';
+            position: absolute;
+            left: 0;
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .warning-strip {
+            background: repeating-linear-gradient(
+                -45deg,
+                rgba(255, 183, 0, 0.15),
+                rgba(255, 183, 0, 0.15) 10px,
+                rgba(0, 0, 0, 0.2) 10px,
+                rgba(0, 0, 0, 0.2) 20px
+            );
+            border: 1px solid var(--accent-amber);
+            border-radius: 6px;
+            padding: 10px 15px;
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: var(--accent-amber);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            grid-column: 1 / -1;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 10px;
+        }
+
+        footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        footer a:hover {
+            color: #fff;
+            text-shadow: var(--glow-cyan);
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1280px) {
+            .app-container {
+                grid-template-columns: 280px 1fr;
+            }
+            .sidebar-right {
+                grid-column: 1 / -1;
+                display: grid;
+                grid-template-columns: 1fr 1.2fr;
+                gap: 15px;
+            }
+            .info-panel-glass {
+                grid-column: 2;
+                grid-row: 1;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-right {
+                display: flex;
+                flex-direction: column;
+            }
+            .info-panel-glass {
+                grid-column: auto;
+                grid-row: auto;
+            }
+            .comparison-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header Console -->
+        <header class="glass-panel">
+            <div class="logo-area">
+                <div class="hud-status-light" id="statusLight"></div>
+                <div class="logo-text">
+                    <h1>Nexus HVAC-Sim</h1>
+                    <span>Refrigerant Cycle Diagnostics v3.5</span>
+                </div>
+            </div>
+            <div class="header-controls">
+                <div class="hud-badge" onclick="openModal('quizModal')">🧠 Cycle Exam</div>
+                <div class="hud-badge" onclick="openModal('comparisonModal')">🔍 Comparison View</div>
+                <a href="https://github.com/FuturisticLab/ac-refrigerant-cycle" class="star-button" target="_blank">
+                    <span>⭐</span> Star Console
+                </a>
+            </div>
+        </header>
+
+        <!-- Left Sidebar: Controls & Faults -->
+        <div class="sidebar-left">
+            <!-- Parameter Settings Panel -->
+            <div class="glass-panel">
+                <div class="panel-header">
+                    <h2>⚙️ Simulation Control</h2>
+                </div>
+                <div class="panel-body">
+                    <!-- Refrigerant Select -->
+                    <div class="control-group">
+                        <div class="control-label">Refrigerant Molecule</div>
+                        <div class="selector-grid">
+                            <button class="selector-btn active" onclick="setRefrigerant('R410A')">R-410A</button>
+                            <button class="selector-btn" onclick="setRefrigerant('R32')">R-32 (Eco)</button>
+                            <button class="selector-btn" onclick="setRefrigerant('R134a')">R-134a</button>
+                            <button class="selector-btn" onclick="setRefrigerant('R744')">R-744 (CO₂)</button>
+                        </div>
+                    </div>
+
+                    <!-- Sliders -->
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Indoor Heat Load</span>
+                            <span class="value" id="valIndoorTemp">75 °F</span>
+                        </div>
+                        <div class="slider-wrapper">
+                            <input type="range" id="slideIndoorTemp" min="65" max="85" value="75" step="1">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Outdoor Ambient</span>
+                            <span class="value" id="valOutdoorTemp">95 °F</span>
+                        </div>
+                        <div class="slider-wrapper">
+                            <input type="range" id="slideOutdoorTemp" min="75" max="115" value="95" step="1">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Compressor Speed</span>
+                            <span class="value" id="valCompSpeed">60 Hz</span>
+                        </div>
+                        <div class="slider-wrapper">
+                            <input type="range" id="slideCompSpeed" min="30" max="120" value="60" step="5">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Valve Expansion</span>
+                            <span class="value" id="valValveOpening">60 %</span>
+                        </div>
+                        <div class="slider-wrapper">
+                            <input type="range" id="slideValveOpening" min="20" max="100" value="60" step="2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fault Injection Panel -->
+            <div class="glass-panel">
+                <div class="panel-header">
+                    <h2>⚠️ Fault Injector</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="fault-grid">
+                        <button class="fault-btn active" id="fault-normal" onclick="setFault('normal')">
+                            <div class="fault-indicator"></div> Normal Calibration
+                        </button>
+                        <button class="fault-btn" id="fault-lowcharge" onclick="setFault('lowcharge')">
+                            <div class="fault-indicator"></div> Low Refrigerant Charge
+                        </button>
+                        <button class="fault-btn" id="fault-dirtyfilter" onclick="setFault('dirtyfilter')">
+                            <div class="fault-indicator"></div> Blocked Indoor Air Filter
+                        </button>
+                        <button class="fault-btn" id="fault-dirtycondenser" onclick="setFault('dirtycondenser')">
+                            <div class="fault-indicator"></div> Dirty Outdoor Condenser
+                        </button>
+                        <button class="fault-btn" id="fault-valveleak" onclick="setFault('valveleak')">
+                            <div class="fault-indicator"></div> Compressor Valve Failure
+                        </button>
+                    </div>
+                    <div id="faultWarning" class="warning-strip" style="display:none;">
+                        <span>⚠️ WARNING: SYSTEM DEGRADATION</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Panel: SVG Schematic -->
+        <div class="viewport-center">
+            <div class="glass-panel schematic-wrapper">
+                <div class="ambient-card indoor">Indoor Coil: <span id="overlayIndoor">75</span>°F</div>
+                <div class="ambient-card outdoor">Outdoor Ambient: <span id="overlayOutdoor">95</span>°F</div>
+                
+                <svg class="schematic-svg" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <!-- Glow Filters -->
+                        <filter id="svgGlowCyan" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="6" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <filter id="svgGlowMagenta" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="6" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <filter id="svgGlowAmber" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="6" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+
+                        <!-- Pipe Gradients -->
+                        <linearGradient id="evapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#a124ff" />
+                            <stop offset="100%" stop-color="#00f3ff" />
+                        </linearGradient>
+                        <linearGradient id="condGradient" x1="100%" y1="100%" x2="0%" y2="0%">
+                            <stop offset="0%" stop-color="#ff0055" />
+                            <stop offset="100%" stop-color="#ffb700" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Core PIPELINES (Glowing Underlayers) -->
+                    <!-- Suction Line (Cyan) -->
+                    <path class="pipe-line" id="suctionPipe" d="M 240 360 L 560 360" stroke="#00f3ff" filter="url(#svgGlowCyan)" />
+                    <!-- Discharge Line (Magenta) -->
+                    <path class="pipe-line" id="dischargePipe" d="M 630 300 L 630 180" stroke="#ff0055" filter="url(#svgGlowMagenta)" />
+                    <!-- Liquid Line (Amber) -->
+                    <path class="pipe-line" id="liquidPipe" d="M 550 140 L 210 140" stroke="#ffb700" filter="url(#svgGlowAmber)" />
+                    <!-- Expansion Mix Line (Purple/Blue) -->
+                    <path class="pipe-line" id="expansionPipe" d="M 160 170 L 160 300" stroke="#a124ff" />
+
+                    <!-- PIPE Particle Animations -->
+                    <path class="pipe-flow" d="M 240 360 L 560 360" stroke="rgba(255,255,255,0.7)" id="flowSuction" />
+                    <path class="pipe-flow" d="M 630 300 L 630 180" stroke="rgba(255,255,255,0.7)" id="flowDischarge" />
+                    <path class="pipe-flow" d="M 550 140 L 210 140" stroke="rgba(255,255,255,0.7)" id="flowLiquid" />
+                    <path class="pipe-flow" d="M 160 170 L 160 300" stroke="rgba(255,255,255,0.7)" id="flowExpansion" />
+
+                    <!-- Evaporator Coil (Indoor Zigzag) -->
+                    <path class="coil-line" d="M 160 300 Q 140 310 160 320 Q 180 330 160 340 Q 140 350 160 360" stroke="url(#evapGradient)" />
+                    <!-- Condenser Coil (Outdoor Zigzag) -->
+                    <path class="coil-line" d="M 630 180 Q 610 170 630 160 Q 650 150 630 140 Q 610 130 630 120" stroke="url(#condGradient)" />
+
+                    <!-- COMPONENTS -->
+                    <!-- 1. Evaporator (Left, Inside) -->
+                    <g class="svg-comp-group" onclick="selectStage('evaporator')">
+                        <rect class="svg-comp-box" id="svg-evaporator" x="80" y="270" width="160" height="120" rx="6" />
+                        <text x="160" y="295" font-family="'Orbitron'" font-size="10" fill="#00f3ff" text-anchor="middle" font-weight="bold">EVAPORATOR</text>
+                        <!-- Spinning Fan -->
+                        <g transform="translate(125, 345)">
+                            <circle r="22" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(0, 243, 255, 0.2)" stroke-width="1.5"/>
+                            <g class="fan-blade" id="indoorFan">
+                                <path d="M-4 -18 L4 -18 L2 0 L-2 0 Z" fill="#8a99ad"/>
+                                <path d="M-4 18 L4 18 L2 0 L-2 0 Z" fill="#8a99ad"/>
+                                <path d="M-18 -4 L-18 4 L0 2 L0 -2 Z" fill="#8a99ad"/>
+                                <path d="M 18 -4 L 18 4 L 0 2 L 0 -2 Z" fill="#8a99ad"/>
+                            </g>
+                            <circle r="4" fill="#00f3ff"/>
+                        </g>
+                        <!-- Frost overlay -->
+                        <path class="frost-overlay" id="frostGlow" d="M 75 265 L 245 265 L 245 395 L 75 395 Z" fill="none" stroke="#fff" stroke-width="3" filter="url(#svgGlowCyan)" />
+                        <!-- State text -->
+                        <text x="210" y="380" font-family="'Orbitron'" font-size="9" fill="#00f3ff" text-anchor="end">STAGE 1</text>
+                    </g>
+
+                    <!-- 2. Compressor (Bottom Right) -->
+                    <g class="svg-comp-group" onclick="selectStage('compressor')">
+                        <rect class="svg-comp-box" id="svg-compressor" x="560" y="290" width="140" height="110" rx="8" />
+                        <text x="630" y="315" font-family="'Orbitron'" font-size="10" fill="#ff0055" text-anchor="middle" font-weight="bold">COMPRESSOR</text>
+                        <!-- Piston shaft visual -->
+                        <g transform="translate(630, 355)" id="compressorPiston">
+                            <rect x="-15" y="-12" width="30" height="24" rx="3" fill="rgba(255, 0, 85, 0.1)" stroke="#ff0055" stroke-width="2" />
+                            <circle r="8" fill="rgba(255, 255, 255, 0.1)" stroke="#ff0055" stroke-width="1.5" />
+                            <line x1="0" y1="0" x2="10" y2="10" stroke="#ff0055" stroke-width="2"/>
+                        </g>
+                        <text x="685" y="385" font-family="'Orbitron'" font-size="9" fill="#ff0055" text-anchor="end">STAGE 2</text>
+                    </g>
+
+                    <!-- 3. Condenser (Top Right) -->
+                    <g class="svg-comp-group" onclick="selectStage('condenser')">
+                        <rect class="svg-comp-box" id="svg-condenser" x="550" y="90" width="160" height="120" rx="6" />
+                        <text x="630" y="115" font-family="'Orbitron'" font-size="10" fill="#ffb700" text-anchor="middle" font-weight="bold">CONDENSER</text>
+                        <!-- Condenser fan -->
+                        <g transform="translate(595, 160)">
+                            <circle r="22" fill="rgba(255, 255, 255, 0.05)" stroke="rgba(255, 183, 0, 0.2)" stroke-width="1.5"/>
+                            <g class="fan-blade" id="outdoorFan">
+                                <path d="M-4 -18 L4 -18 L2 0 L-2 0 Z" fill="#8a99ad"/>
+                                <path d="M-4 18 L4 18 L2 0 L-2 0 Z" fill="#8a99ad"/>
+                                <path d="M-18 -4 L-18 4 L0 2 L0 -2 Z" fill="#8a99ad"/>
+                                <path d="M 18 -4 L 18 4 L 0 2 L 0 -2 Z" fill="#8a99ad"/>
+                            </g>
+                            <circle r="4" fill="#ffb700"/>
+                        </g>
+                        <text x="695" y="200" font-family="'Orbitron'" font-size="9" fill="#ffb700" text-anchor="end">STAGE 3</text>
+                    </g>
+
+                    <!-- 4. Expansion Valve (Top Left) -->
+                    <g class="svg-comp-group" onclick="selectStage('valve')">
+                        <rect class="svg-comp-box" id="svg-valve" x="110" y="90" width="100" height="100" rx="6" />
+                        <text x="160" y="115" font-family="'Orbitron'" font-size="10" fill="#a124ff" text-anchor="middle" font-weight="bold">EXPANSION</text>
+                        <!-- Electronic Valve details -->
+                        <path d="M 140 140 L 160 165 L 180 140 Z" fill="rgba(161, 36, 255, 0.1)" stroke="#a124ff" stroke-width="1.5" />
+                        <circle cx="160" cy="140" r="12" fill="rgba(161, 36, 255, 0.1)" stroke="#a124ff" stroke-width="2" />
+                        <text x="195" y="180" font-family="'Orbitron'" font-size="9" fill="#a124ff" text-anchor="end">STAGE 4</text>
+                    </g>
+
+                    <!-- HOVERABLE TELEMETRY NODE DOTS (Real-time readouts next to pipes) -->
+                    <!-- Suction Line Node -->
+                    <g class="telemetry-node" transform="translate(400, 360)">
+                        <circle class="node-circle" r="8" fill="#000" stroke="#00f3ff" stroke-width="2" />
+                        <text x="0" y="-14" font-family="'Orbitron'" font-size="9" fill="#00f3ff" text-anchor="middle" font-weight="bold" id="nodeT1">40°F</text>
+                    </g>
+                    <!-- Discharge Line Node -->
+                    <g class="telemetry-node" transform="translate(630, 240)">
+                        <circle class="node-circle" r="8" fill="#000" stroke="#ff0055" stroke-width="2" />
+                        <text x="20" y="4" font-family="'Orbitron'" font-size="9" fill="#ff0055" text-anchor="start" font-weight="bold" id="nodeT2">140°F</text>
+                    </g>
+                    <!-- Liquid Line Node -->
+                    <g class="telemetry-node" transform="translate(380, 140)">
+                        <circle class="node-circle" r="8" fill="#000" stroke="#ffb700" stroke-width="2" />
+                        <text x="0" y="-14" font-family="'Orbitron'" font-size="9" fill="#ffb700" text-anchor="middle" font-weight="bold" id="nodeT3">95°F</text>
+                    </g>
+                    <!-- Expansion Mix Node -->
+                    <g class="telemetry-node" transform="translate(160, 230)">
+                        <circle class="node-circle" r="8" fill="#000" stroke="#a124ff" stroke-width="2" />
+                        <text x="-16" y="4" font-family="'Orbitron'" font-size="9" fill="#a124ff" text-anchor="end" font-weight="bold" id="nodeT4">40°F</text>
+                    </g>
+                </svg>
+            </div>
+
+            <!-- Lower Deck Controls -->
+            <div class="glass-panel deck-controls">
+                <div class="control-btns">
+                    <button class="btn-action primary" id="playBtn" onclick="toggleSimulation()">⏸️ Pause Sim</button>
+                    <button class="btn-action" onclick="resetSimulation()">🔄 Reset</button>
+                    <button class="btn-action" id="audioToggle" onclick="toggleAudio()">🔊 Sound ON</button>
+                </div>
+                
+                <div class="control-group" style="flex: 1; max-width: 200px;">
+                    <div class="control-label">
+                        <span>Flow Speed</span>
+                        <span class="value" id="valFlowSpeed">1.0x</span>
+                    </div>
+                    <input type="range" id="slideSpeed" min="0.2" max="3.0" value="1.0" step="0.2" oninput="updateFlowSpeed(this.value)">
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar: Gauges, p-h chart & explanations -->
+        <div class="sidebar-right">
+            <!-- Diagnostics & Gauges -->
+            <div class="glass-panel">
+                <div class="panel-header">
+                    <h2>📊 Live Telemetry</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="telemetry-grid">
+                        <div class="telemetry-card">
+                            <span class="t-label">Suction Press</span>
+                            <span class="t-value" id="valPressLow">118 PSI</span>
+                        </div>
+                        <div class="telemetry-card">
+                            <span class="t-label">Head Press</span>
+                            <span class="t-value" id="valPressHigh">418 PSI</span>
+                        </div>
+                        <div class="telemetry-card">
+                            <span class="t-label">Cooling Load</span>
+                            <span class="t-value" id="valCoolingBTU">24,000 BTU/h</span>
+                        </div>
+                        <div class="telemetry-card">
+                            <span class="t-label">Sys Efficiency</span>
+                            <span class="t-value" id="valCOP" style="color:var(--accent-green)">3.80 COP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- p-h Diagram Chart -->
+            <div class="glass-panel chart-container">
+                <div class="control-label" style="width:100%; margin-bottom:6px; padding: 0 5px;">
+                    <span>Pressure-Enthalpy (p-h) Chart</span>
+                    <span style="font-size:0.8em; color:var(--text-secondary);">Cycle Envelope Plot</span>
+                </div>
+                <canvas id="phChart" width="340" height="220"></canvas>
+            </div>
+
+            <!-- Active Stage Explanation -->
+            <div class="glass-panel info-panel-glass">
+                <div class="panel-header" style="border-bottom-color: rgba(255,255,255,0.05)">
+                    <h2>📖 Telemetry Analysis</h2>
+                </div>
+                <div class="info-panel-body">
+                    <!-- Intro view -->
+                    <div class="stage-detail active" id="detail-intro">
+                        <h3>HVAC Telemetry Console</h3>
+                        <p>Welcome to the Nexus thermodynamic simulation dashboard. This console plots the physical behavior of a complete 4-stage vapor compression cooling cycle.</p>
+                        <div class="fun-fact-badge">
+                            💡 Concept: The cycle shifts in real-time as you modify parameters. Click on any component box (Evaporator, Compressor, etc.) to load direct stage analysis.
+                        </div>
+                    </div>
+
+                    <!-- Evaporator Detail -->
+                    <div class="stage-detail" id="detail-evaporator">
+                        <h3>Stage 1: The Evaporator (Indoor Coil)</h3>
+                        <p>A cold, low-pressure liquid-vapor refrigerant mixture flows inside. Warm air from the house is blown over the coils, forcing the refrigerant to absorb heat and boil into a gas.</p>
+                        <div class="stage-state-box">
+                            <div>
+                                <span class="lbl">Phase Transformation</span>
+                                <span class="val">Liquid ➔ Vapor</span>
+                            </div>
+                            <div>
+                                <span class="lbl">Pressure State</span>
+                                <span class="val" id="evapPressState">LOW (118 PSI)</span>
+                            </div>
+                        </div>
+                        <p><strong>Superheat:</strong> Saturated boiling completes inside, and the vapor warms slightly as it exits, ensuring no liquid reaches the compressor.</p>
+                    </div>
+
+                    <!-- Compressor Detail -->
+                    <div class="stage-detail" id="detail-compressor">
+                        <h3>Stage 2: The Compressor</h3>
+                        <p>The "heart" of the system. Cool gas is sucked in and compressed into a high-pressure, superheated hot gas. Squeezing the molecules creates friction and kinetic energy, driving the temperature up.</p>
+                        <div class="stage-state-box">
+                            <div>
+                                <span class="lbl">Phase Transformation</span>
+                                <span class="val">Vapor ➔ Hot Vapor</span>
+                            </div>
+                            <div>
+                                <span class="lbl">Pressure State</span>
+                                <span class="val" id="compPressState">Low ➔ High</span>
+                            </div>
+                        </div>
+                        <p><strong>Power:</strong> This stage accounts for approximately 90% of the electrical energy consumed by the cooling system.</p>
+                    </div>
+
+                    <!-- Condenser Detail -->
+                    <div class="stage-detail" id="detail-condenser">
+                        <h3>Stage 3: The Condenser (Outdoor Coil)</h3>
+                        <p>The high-pressure, superheated vapor enters the outdoor coil. Because the refrigerant is hotter than the outside air, heat flows out of the system. As it cools, the gas condenses back to a warm liquid.</p>
+                        <div class="stage-state-box">
+                            <div>
+                                <span class="lbl">Phase Transformation</span>
+                                <span class="val">Vapor ➔ Liquid</span>
+                            </div>
+                            <div>
+                                <span class="lbl">Pressure State</span>
+                                <span class="val" id="condPressState">HIGH (418 PSI)</span>
+                            </div>
+                        </div>
+                        <p><strong>Subcooling:</strong> The liquid refrigerant cools below its condensing temperature before leaving, maximizing downstream expansion capacity.</p>
+                    </div>
+
+                    <!-- Expansion Valve Detail -->
+                    <div class="stage-detail" id="detail-valve">
+                        <h3>Stage 4: Expansion Valve</h3>
+                        <p>The warm liquid is forced through a microscopic orifice. The drop in pressure causes flash evaporation, forcing the refrigerant temperature to plummet down to its boiling point.</p>
+                        <div class="stage-state-box">
+                            <div>
+                                <span class="lbl">Phase Transformation</span>
+                                <span class="val">Liquid ➔ Mix</span>
+                            </div>
+                            <div>
+                                <span class="lbl">Pressure State</span>
+                                <span class="val" id="valvePressState">High ➔ Low</span>
+                            </div>
+                        </div>
+                        <p><strong>Throttling:</strong> An isenthalpic process (constant enthalpy). The pressure relief creates a fine, cold mist, primed to absorb heat.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="glass-panel">
+            <p>🔧 Educational HVAC Thermodynamic Simulator | Built for Engineering Academics</p>
+            <p>
+                <a href="#" onclick="openModal('comparisonModal'); return false;">Inside vs Outside</a> | 
+                <a href="#" onclick="openModal('quizModal'); return false;">Test Quiz</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- Quiz Modal -->
+    <div class="modal" id="quizModal">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h2>🧠 AC Cycle Exam Console</h2>
+                <button class="close-btn" onclick="closeModal('quizModal')">&times;</button>
+            </div>
+            <div class="quiz-container">
+                <!-- Question 1 -->
+                <div class="quiz-q-card active" data-q="0">
+                    <h3>Question 1: What is the main thermodynamic purpose of the Evaporator?</h3>
+                    <div class="quiz-opts-list">
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">A) Squeeze the refrigerant gas to raise its temperature.</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, true)">B) Absorb heat from indoor air, causing the refrigerant to evaporate.</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">C) Reject indoor heat to the outside atmosphere.</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">D) Drop the pressure to create a cold liquid spray.</button>
+                    </div>
+                </div>
+                <!-- Question 2 -->
+                <div class="quiz-q-card" data-q="1">
+                    <h3>Question 2: Why must the Compressor raise the refrigerant temperature above the outdoor ambient temperature?</h3>
+                    <div class="quiz-opts-list">
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">A) To prevent the compressor motor from freezing.</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">B) To speed up the refrigerant flow inside the liquid line.</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, true)">C) Heat naturally flows from hot to cold; the refrigerant must be hotter than outdoor air to reject heat.</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">D) Squeezing vapor is the only way to convert it back to a subcooled liquid.</button>
+                    </div>
+                </div>
+                <!-- Question 3 -->
+                <div class="quiz-q-card" data-q="2">
+                    <h3>Question 3: What thermodynamic process occurs across the Expansion Valve?</h3>
+                    <div class="quiz-opts-list">
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">A) Isentropic compression (isentropic work absorption).</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">B) Isobaric heat transfer (constant pressure cooling).</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, true)">C) Isenthalpic expansion (throttling with rapid pressure and temp drop).</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">D) Isothermal vapor condensation.</button>
+                    </div>
+                </div>
+                <!-- Question 4 -->
+                <div class="quiz-q-card" data-q="3">
+                    <h3>Question 4: If a dirty air filter restricts airflow across the evaporator coil, what physical symptom occurs?</h3>
+                    <div class="quiz-opts-list">
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">A) Head pressure rises to dangerous levels and triggers system overload.</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, true)">B) Evaporator temperature drops below 32°F (0°C), causing condensation to freeze and ice to form.</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">C) Refrigerant subcooling increases dramatically.</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">D) The compressor speeds up to compensate for lost pressure.</button>
+                    </div>
+                </div>
+                <!-- Question 5 -->
+                <div class="quiz-q-card" data-q="4">
+                    <h3>Question 5: What is "Superheat" at the exit of the evaporator?</h3>
+                    <div class="quiz-opts-list">
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, true)">A) The temperature increase of the vapor above its saturation temperature, protecting the compressor from liquid slugging.</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">B) The high temperature of discharge gas leaving the compressor dome.</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">C) The heat added by the condenser fan to cool the vapor.</button>
+                        <button class="quiz-opt-btn" onclick="answerQuestion(this, false)">D) The heat load in the home during hot summer afternoons.</button>
+                    </div>
+                </div>
+
+                <!-- Score Summary (Hidden at start) -->
+                <div class="quiz-score-summary" id="quizScoreCard" style="display:none;">
+                    <h3>Assessment Complete!</h3>
+                    <span class="quiz-score-num" id="scoreNum">5 / 5</span>
+                    <p id="scoreComment">Master class! Excellent understanding of HVAC systems.</p>
+                    <button class="btn-action primary" onclick="resetQuiz()">Retake Assessment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparison View Modal -->
+    <div class="modal" id="comparisonModal">
+        <div class="modal-content glass-panel" style="max-width: 780px;">
+            <div class="modal-header">
+                <h2>🔍 Heat Absorption vs Heat Rejection</h2>
+                <button class="close-btn" onclick="closeModal('comparisonModal')">&times;</button>
+            </div>
+            <div class="comparison-layout">
+                <div class="comp-card-hud inside">
+                    <h3>🏠 Indoor Unit (Evaporator)</h3>
+                    <ul>
+                        <li><strong>Sensible Action:</strong> Sucks in hot indoor air, blows out cooled indoor air.</li>
+                        <li><strong>Refrigerant State:</strong> Low pressure cold liquid boils to a gas.</li>
+                        <li><strong>Heat Direction:</strong> Heat energy flows from the room air INTO the refrigerant (Endothermic).</li>
+                        <li><strong>Coil Temperature:</strong> Kept at ~40°F (4°C) to facilitate massive heat exchange.</li>
+                        <li><strong>Comfort Effect:</strong> Removes humidity as water condenses on the cold coil surfaces.</li>
+                    </ul>
+                </div>
+                <div class="comp-card-hud outside">
+                    <h3>🌞 Outdoor Unit (Condenser)</h3>
+                    <ul>
+                        <li><strong>Sensible Action:</strong> Sucks in ambient outside air, blows out high-heat air.</li>
+                        <li><strong>Refrigerant State:</strong> High pressure hot vapor cools and condenses to a liquid.</li>
+                        <li><strong>Heat Direction:</strong> Heat energy flows from the refrigerant OUT to the environment (Exothermic).</li>
+                        <li><strong>Coil Temperature:</strong> Elevates to ~120°F (49°C) to dump heat into hot summer air.</li>
+                        <li><strong>Power Action:</strong> Contains the compressor motor pulling current to drive the thermodynamic work.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Telemetry Simulation & UI Logic Engine -->
+    <script>
+        // Web Audio Synthesizer Class
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.compressorOsc = null;
+                this.compressorSub = null;
+                this.compressorGain = null;
+                this.valveNoise = null;
+                this.valveGain = null;
+                this.alarmGain = null;
+                this.alarmOsc = null;
+                this.alarmInterval = null;
+                this.enabled = false;
+            }
+
+            init() {
+                if (this.ctx) return;
+                try {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContextClass();
+                    
+                    // 1. Setup Compressor Hum
+                    this.compressorOsc = this.ctx.createOscillator();
+                    this.compressorOsc.type = 'triangle';
+                    this.compressorOsc.frequency.value = 60;
+                    
+                    this.compressorSub = this.ctx.createOscillator();
+                    this.compressorSub.type = 'sawtooth';
+                    this.compressorSub.frequency.value = 120;
+                    
+                    this.compressorGain = this.ctx.createGain();
+                    this.compressorGain.gain.value = 0.0;
+                    
+                    const compFilter = this.ctx.createBiquadFilter();
+                    compFilter.type = 'lowpass';
+                    compFilter.frequency.value = 160;
+                    
+                    this.compressorOsc.connect(this.compressorGain);
+                    this.compressorSub.connect(compFilter);
+                    compFilter.connect(this.compressorGain);
+                    this.compressorGain.connect(this.ctx.destination);
+                    
+                    this.compressorOsc.start();
+                    this.compressorSub.start();
+                    
+                    // 2. Setup Expansion Valve Hiss (White Noise Buffer)
+                    const bufferSize = 2 * this.ctx.sampleRate;
+                    const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                    const output = noiseBuffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        output[i] = Math.random() * 2 - 1;
+                    }
+                    
+                    this.valveNoise = this.ctx.createBufferSource();
+                    this.valveNoise.buffer = noiseBuffer;
+                    this.valveNoise.loop = true;
+                    
+                    const valveFilter = this.ctx.createBiquadFilter();
+                    valveFilter.type = 'bandpass';
+                    valveFilter.frequency.value = 3500;
+                    valveFilter.Q.value = 1.2;
+                    
+                    this.valveGain = this.ctx.createGain();
+                    this.valveGain.gain.value = 0.0;
+                    
+                    this.valveNoise.connect(valveFilter);
+                    valveFilter.connect(this.valveGain);
+                    this.valveGain.connect(this.ctx.destination);
+                    this.valveNoise.start();
+                    
+                    // 3. Alarm Gain
+                    this.alarmGain = this.ctx.createGain();
+                    this.alarmGain.gain.value = 0.0;
+                    this.alarmGain.connect(this.ctx.destination);
+                    
+                    this.enabled = true;
+                } catch (e) {
+                    console.error("Audio Context initialization failed: ", e);
+                }
+            }
+
+            setAudio(status) {
+                this.enabled = status;
+                if (!this.enabled && this.ctx) {
+                    if (this.compressorGain) this.compressorGain.gain.setValueAtTime(0, this.ctx.currentTime);
+                    if (this.valveGain) this.valveGain.gain.setValueAtTime(0, this.ctx.currentTime);
+                    this.stopAlarm();
+                }
+            }
+
+            updateSoundParams(speedHz, flowRate, hasAlarm) {
+                if (!this.enabled || !this.ctx) return;
+
+                // Adjust Compressor Pitch
+                // Map speed (30-120) to pitch range (40-100 Hz)
+                const baseFreq = 40 + (speedHz - 30) * 0.67;
+                this.compressorOsc.frequency.setTargetAtTime(baseFreq, this.ctx.currentTime, 0.15);
+                this.compressorSub.frequency.setTargetAtTime(baseFreq * 2, this.ctx.currentTime, 0.15);
+                
+                // Adjust volume based on speed/load
+                const compVol = 0.08 + (speedHz / 120) * 0.12;
+                this.compressorGain.gain.setTargetAtTime(compVol, this.ctx.currentTime, 0.15);
+
+                // Adjust Expansion Valve Hiss volume
+                const valveVol = Math.min(0.06, flowRate * 0.4);
+                this.valveGain.gain.setTargetAtTime(valveVol, this.ctx.currentTime, 0.15);
+
+                // Alarm Control
+                if (hasAlarm) {
+                    this.startAlarm();
+                } else {
+                    this.stopAlarm();
+                }
+            }
+
+            startAlarm() {
+                if (!this.enabled || !this.ctx || this.alarmInterval) return;
+                
+                this.alarmOsc = this.ctx.createOscillator();
+                this.alarmOsc.type = 'sine';
+                this.alarmOsc.frequency.value = 880; // High tone A5
+                this.alarmOsc.connect(this.alarmGain);
+                this.alarmOsc.start();
+
+                this.alarmInterval = setInterval(() => {
+                    if (!this.enabled || !this.ctx) return;
+                    const now = this.ctx.currentTime;
+                    this.alarmGain.gain.setValueAtTime(0.12, now);
+                    this.alarmGain.gain.setValueAtTime(0, now + 0.15);
+                }, 1000);
+            }
+
+            stopAlarm() {
+                if (this.alarmInterval) {
+                    clearInterval(this.alarmInterval);
+                    this.alarmInterval = null;
+                }
+                if (this.alarmOsc) {
+                    try {
+                        this.alarmOsc.stop();
+                    } catch (e) {}
+                    this.alarmOsc = null;
+                }
+                if (this.alarmGain) {
+                    this.alarmGain.gain.setValueAtTime(0, this.ctx.currentTime);
+                }
+            }
+
+            playClick() {
+                if (!this.enabled || !this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1000, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.05);
+                gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.06);
+            }
+
+            playChime(isCorrect) {
+                if (!this.enabled || !this.ctx) return;
+                const osc1 = this.ctx.createOscillator();
+                const osc2 = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.4);
+
+                if (isCorrect) {
+                    osc1.frequency.setValueAtTime(523.25, this.ctx.currentTime); // C5
+                    osc1.frequency.setValueAtTime(659.25, this.ctx.currentTime + 0.08); // E5
+                    osc2.frequency.setValueAtTime(783.99, this.ctx.currentTime + 0.16); // G5
+                } else {
+                    osc1.frequency.setValueAtTime(220, this.ctx.currentTime); // A3
+                    osc1.frequency.setValueAtTime(196, this.ctx.currentTime + 0.1); // G3
+                    osc2.frequency.setValueAtTime(164.81, this.ctx.currentTime + 0.18); // E3
+                }
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc1.start();
+                osc2.start();
+                osc1.stop(this.ctx.currentTime + 0.45);
+                osc2.stop(this.ctx.currentTime + 0.45);
+            }
+        }
+
+        const sound = new SoundEngine();
+
+        // SIMULATION STATE VARIABLES
+        let isSimRunning = true;
+        let activeRefrigerant = 'R410A';
+        let currentFault = 'normal';
+        let flowSpeedScale = 1.0;
+        let selectedStageId = 'intro';
+
+        // Simulation parameters structure
+        const simParams = {
+            indoorTemp: 75,
+            outdoorTemp: 95,
+            compSpeed: 60,
+            valveOpening: 60,
+        };
+
+        // Thermophysical gas profiles
+        const refrigProfiles = {
+            R410A: {
+                name: 'R-410A',
+                pCrit: 714,
+                hCrit: 280,
+                widthF: 5.5,
+                calcPress: (t) => 0.015 * t * t + 1.2 * t + 45
+            },
+            R32: {
+                name: 'R-32',
+                pCrit: 840,
+                hCrit: 300,
+                widthF: 5.8,
+                calcPress: (t) => 0.016 * t * t + 1.25 * t + 46
+            },
+            R134a: {
+                name: 'R-134a',
+                pCrit: 588,
+                hCrit: 260,
+                widthF: 6.2,
+                calcPress: (t) => 0.006 * t * t + 0.55 * t + 18
+            },
+            R744: {
+                name: 'R-744 (CO₂)',
+                pCrit: 1070,
+                hCrit: 240,
+                widthF: 4.0,
+                calcPress: (t) => 0.05 * t * t + 4.5 * t + 310
+            }
+        };
+
+        // UI DOM References
+        const dom = {
+            valIndoorTemp: document.getElementById('valIndoorTemp'),
+            valOutdoorTemp: document.getElementById('valOutdoorTemp'),
+            valCompSpeed: document.getElementById('valCompSpeed'),
+            valValveOpening: document.getElementById('valValveOpening'),
+            slideIndoorTemp: document.getElementById('slideIndoorTemp'),
+            slideOutdoorTemp: document.getElementById('slideOutdoorTemp'),
+            slideCompSpeed: document.getElementById('slideCompSpeed'),
+            slideValveOpening: document.getElementById('slideValveOpening'),
+            
+            overlayIndoor: document.getElementById('overlayIndoor'),
+            overlayOutdoor: document.getElementById('overlayOutdoor'),
+            statusLight: document.getElementById('statusLight'),
+            faultWarning: document.getElementById('faultWarning'),
+            
+            valPressLow: document.getElementById('valPressLow'),
+            valPressHigh: document.getElementById('valPressHigh'),
+            valCoolingBTU: document.getElementById('valCoolingBTU'),
+            valCOP: document.getElementById('valCOP'),
+            
+            // Nodes
+            nodeT1: document.getElementById('nodeT1'),
+            nodeT2: document.getElementById('nodeT2'),
+            nodeT3: document.getElementById('nodeT3'),
+            nodeT4: document.getElementById('nodeT4'),
+            
+            // SVG animations
+            flowSuction: document.getElementById('flowSuction'),
+            flowDischarge: document.getElementById('flowDischarge'),
+            flowLiquid: document.getElementById('flowLiquid'),
+            flowExpansion: document.getElementById('flowExpansion'),
+            indoorFan: document.getElementById('indoorFan'),
+            outdoorFan: document.getElementById('outdoorFan'),
+            frostGlow: document.getElementById('frostGlow'),
+            
+            // Telemetry details inside panel
+            evapPressState: document.getElementById('evapPressState'),
+            compPressState: document.getElementById('compPressState'),
+            condPressState: document.getElementById('condPressState'),
+            valvePressState: document.getElementById('valvePressState'),
+        };
+
+        // Thermophysical calculation outputs
+        let calcData = {
+            tEvap: 40,
+            tCond: 120,
+            pEvap: 118,
+            pCond: 418,
+            superheat: 10,
+            subcooling: 10,
+            massFlow: 0.05,
+            cop: 3.8,
+            coolingBTU: 24000,
+            // Points: [h, P] (Enthalpy, Pressure)
+            p1: [0, 0],
+            p2: [0, 0],
+            p3: [0, 0],
+            p4: [0, 0],
+        };
+
+        // Cycle Animation loop counters
+        let indoorFanAngle = 0;
+        let outdoorFanAngle = 0;
+        let pistonCycle = 0;
+        let animationFrameId = null;
+
+        // INITIALIZATION
+        function initApp() {
+            // Bind slider listeners
+            dom.slideIndoorTemp.addEventListener('input', (e) => {
+                simParams.indoorTemp = parseInt(e.target.value);
+                dom.valIndoorTemp.textContent = `${simParams.indoorTemp} °F`;
+                dom.overlayIndoor.textContent = simParams.indoorTemp;
+                runThermodynamicCalculation();
+            });
+            dom.slideOutdoorTemp.addEventListener('input', (e) => {
+                simParams.outdoorTemp = parseInt(e.target.value);
+                dom.valOutdoorTemp.textContent = `${simParams.outdoorTemp} °F`;
+                dom.overlayOutdoor.textContent = simParams.outdoorTemp;
+                runThermodynamicCalculation();
+            });
+            dom.slideCompSpeed.addEventListener('input', (e) => {
+                simParams.compSpeed = parseInt(e.target.value);
+                dom.valCompSpeed.textContent = `${simParams.compSpeed} Hz`;
+                runThermodynamicCalculation();
+            });
+            dom.slideValveOpening.addEventListener('input', (e) => {
+                simParams.valveOpening = parseInt(e.target.value);
+                dom.valValveOpening.textContent = `${simParams.valveOpening} %`;
+                runThermodynamicCalculation();
+            });
+
+            // Start sound on click of any interactive element
+            document.body.addEventListener('click', () => {
+                sound.init();
+            }, { once: true });
+
+            // Initial math and display update
+            runThermodynamicCalculation();
+            
+            // Kickoff animation frame
+            animateSVGComponents();
+            
+            // Trigger flow speed setup
+            updateFlowSpeed(1.0);
+        }
+
+        // THERMODYNAMIC ENGINE CALCULATIONS
+        function runThermodynamicCalculation() {
+            const profile = refrigProfiles[activeRefrigerant];
+            
+            // 1. Establish base evaporator and condenser saturation temperatures
+            let baseTevap = simParams.indoorTemp - 35; // e.g. 75 - 35 = 40F base
+            let baseTcond = simParams.outdoorTemp + 25; // e.g. 95 + 25 = 120F base
+
+            // 2. Tweak based on slider configurations
+            // Expansion valve constriction drops low pressure suction, wide opening raises it
+            baseTevap -= (60 - simParams.valveOpening) * 0.35;
+            // Higher compressor speed draws harder on suction line, pulling suction pressure down
+            baseTevap -= (simParams.compSpeed - 60) * 0.08;
+            
+            // Compressor pumping capacity boosts head pressure
+            baseTcond += (simParams.compSpeed - 60) * 0.12;
+            // Valve constriction raises head pressure
+            baseTcond += (60 - simParams.valveOpening) * 0.15;
+
+            // 3. Inject fault characteristics
+            let lowChargeActive = false;
+            let dirtyFilterActive = false;
+            let dirtyCondenserActive = false;
+            let valveLeakActive = false;
+            
+            dom.statusLight.className = 'hud-status-light';
+            dom.faultWarning.style.display = 'none';
+
+            if (currentFault === 'lowcharge') {
+                baseTevap -= 20; // starving evaporator pressure
+                baseTcond -= 10; // lower heat capacity loading condenser
+                lowChargeActive = true;
+                dom.statusLight.className = 'hud-status-light warning';
+                dom.faultWarning.style.display = 'flex';
+                dom.faultWarning.querySelector('span').textContent = '⚠️ WARNING: LOW REFRIGERANT CHARGE DETECTED';
+            } else if (currentFault === 'dirtyfilter') {
+                baseTevap -= 18; // restricted heat absorption freezes coil
+                dirtyFilterActive = true;
+                dom.statusLight.className = 'hud-status-light warning';
+                dom.faultWarning.style.display = 'flex';
+                dom.faultWarning.querySelector('span').textContent = '⚠️ ALERT: INDOOR COIL DE-ICING TIMEOUT (DIRTY FILTER)';
+            } else if (currentFault === 'dirtycondenser') {
+                baseTcond += 32; // thermal barrier on heat dumping
+                dirtyCondenserActive = true;
+                dom.statusLight.className = 'hud-status-light danger';
+                dom.faultWarning.style.display = 'flex';
+                dom.faultWarning.querySelector('span').textContent = '🚨 DANGER: CONDENSER THERMAL SHUTDOWN LIMIT (DIRTY COIL)';
+            } else if (currentFault === 'valveleak') {
+                baseTevap += 15; // equalization: suction pressure rises
+                baseTcond -= 22; // equalization: discharge pressure falls
+                valveLeakActive = true;
+                dom.statusLight.className = 'hud-status-light warning';
+                dom.faultWarning.style.display = 'flex';
+                dom.faultWarning.querySelector('span').textContent = '⚠️ WARNING: COMPRESSOR FLUID EQUALIZATION (VALVE FAULT)';
+            }
+
+            // Bound checks
+            baseTevap = Math.max(10, Math.min(60, baseTevap));
+            baseTcond = Math.max(baseTcond, baseTevap + 20); // enforce physical separation
+
+            // 4. Calculate pressures from saturation temperatures
+            let pEvap = profile.calcPress(baseTevap);
+            let pCond = profile.calcPress(baseTcond);
+
+            // 5. Model enthalpies and states
+            // State 1: Suction gas (saturated or superheated vapor)
+            let superheat = 8;
+            if (lowChargeActive) superheat = 28; // high suction superheat
+            else if (dirtyFilterActive) superheat = 1; // flooded evaporator
+            else superheat += (60 - simParams.valveOpening) * 0.4;
+            superheat = Math.max(0, superheat);
+
+            const satVapEnthalpy = profile.hCrit + (50 * (superheat > 5 ? 1.05 : 0.95)); // rough base
+            const h1 = satVapEnthalpy + 0.8 * superheat; // gas enthalpy
+            const T1 = baseTevap + superheat; // actual suction line temperature
+
+            // State 3: Liquid line (subcooled liquid)
+            let subcooling = 9;
+            if (lowChargeActive) subcooling = 1; // no reserve liquid
+            else if (dirtyCondenserActive) subcooling = 3; // poor condensation
+            const satLiqEnthalpy = profile.hCrit - 80;
+            const h3 = satLiqEnthalpy - 1.2 * subcooling;
+            const T3 = baseTcond - subcooling;
+
+            // State 4: Valve outlet (throttled mixture)
+            const h4 = h3; // Isenthalpic throttling
+            const T4 = baseTevap;
+
+            // State 2: Compressor discharge
+            let compressorEff = 0.76;
+            if (valveLeakActive) compressorEff = 0.32; // bypass backflow leakage
+            
+            // Enthalpy rise model
+            const workIdeal = 55 * Math.pow(pCond / pEvap, 0.28);
+            const workReal = workIdeal / compressorEff;
+            const h2 = h1 + workReal;
+            
+            // Actual hot discharge temperature
+            const T2 = baseTcond + (workReal * 0.6) - (compressorEff * 20);
+
+            // 6. Volumetric Flow & Capacity calculations
+            let chargeFactor = 1.0;
+            if (lowChargeActive) chargeFactor = 0.45;
+            else if (valveLeakActive) chargeFactor = 0.6;
+
+            const speedHzRatio = simParams.compSpeed / 60;
+            const flowDensityRatio = pEvap / refrigProfiles.R410A.calcPress(40);
+            const massFlow = 0.048 * speedHzRatio * flowDensityRatio * chargeFactor;
+
+            // Cooling Capacity
+            const latentHeatAbsorption = h1 - h4;
+            let coolingCapacityBTU = massFlow * latentHeatAbsorption * 3600 * 0.9;
+            if (dirtyFilterActive) coolingCapacityBTU *= 0.4; // poor airflow load coupling
+
+            // Compressor Input Power
+            const compressorPowerKW = massFlow * workReal * 1.15; // with motor losses
+
+            // Coefficient of Performance (COP)
+            const coolingKW = coolingCapacityBTU / 3412.14;
+            let cop = coolingKW / Math.max(0.2, compressorPowerKW);
+            if (dirtyFilterActive || dirtyCondenserActive || valveLeakActive) {
+                cop *= 0.85;
+            }
+
+            // Save globally
+            calcData = {
+                tEvap: Math.round(baseTevap),
+                tCond: Math.round(baseTcond),
+                pEvap: Math.round(pEvap),
+                pCond: Math.round(pCond),
+                superheat: Math.round(superheat),
+                subcooling: Math.round(subcooling),
+                massFlow: parseFloat(massFlow.toFixed(4)),
+                cop: parseFloat(cop.toFixed(2)),
+                coolingBTU: Math.round(coolingCapacityBTU),
+                p1: [h1, pEvap],
+                p2: [h2, pCond],
+                p3: [h3, pCond],
+                p4: [h4, pEvap]
+            };
+
+            // Update UI elements
+            updateDiagnosticsDisplay(T1, T2, T3, T4);
+            drawPhChartEnvelope();
+
+            // Modulate Sound parameters
+            sound.updateSoundParams(simParams.compSpeed, massFlow, (currentFault === 'dirtycondenser'));
+        }
+
+        function updateDiagnosticsDisplay(T1, T2, T3, T4) {
+            // Update sensor overlay nodes
+            dom.nodeT1.textContent = `${Math.round(T1)}°F`;
+            dom.nodeT2.textContent = `${Math.round(T2)}°F`;
+            dom.nodeT3.textContent = `${Math.round(T3)}°F`;
+            dom.nodeT4.textContent = `${Math.round(T4)}°F`;
+
+            // Update digital meters
+            dom.valPressLow.textContent = `${calcData.pEvap} PSI`;
+            dom.valPressHigh.textContent = `${calcData.pCond} PSI`;
+            dom.valCoolingBTU.textContent = `${calcData.coolingBTU.toLocaleString()} BTU/h`;
+            
+            // Adjust efficiency text color
+            dom.valCOP.textContent = `${calcData.cop.toFixed(2)} COP`;
+            if (calcData.cop >= 3.5) {
+                dom.valCOP.style.color = 'var(--accent-green)';
+            } else if (calcData.cop >= 2.5) {
+                dom.valCOP.style.color = 'var(--accent-amber)';
+            } else {
+                dom.valCOP.style.color = 'var(--accent-magenta)';
+            }
+
+            // Set info detail boxes
+            dom.evapPressState.textContent = `LOW (${calcData.pEvap} PSI)`;
+            dom.compPressState.textContent = `${calcData.pEvap} ➔ ${calcData.pCond} PSI`;
+            dom.condPressState.textContent = `HIGH (${calcData.pCond} PSI)`;
+            dom.valvePressState.textContent = `${calcData.pCond} ➔ ${calcData.pEvap} PSI`;
+
+            // Frost visual trigger
+            if (currentFault === 'dirtyfilter' || currentFault === 'lowcharge') {
+                dom.frostGlow.classList.add('active');
+            } else {
+                dom.frostGlow.classList.remove('active');
+            }
+        }
+
+        // P-H CHART DRAWING ENGINE
+        function drawPhChartEnvelope() {
+            const canvas = document.getElementById('phChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Clear chart
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Establish chart boundaries
+            const paddingLeft = 40;
+            const paddingRight = 15;
+            const paddingTop = 15;
+            const paddingBottom = 30;
+            const w = canvas.width - paddingLeft - paddingRight;
+            const h = canvas.height - paddingTop - paddingBottom;
+
+            // Pressure (Log scale from 10 to 3000 PSI)
+            const logMinP = Math.log10(10);
+            const logMaxP = Math.log10(3000);
+            
+            function getCanvasY(p) {
+                const logP = Math.log10(Math.max(10, p));
+                const ratio = (logP - logMinP) / (logMaxP - logMinP);
+                return canvas.height - paddingBottom - ratio * h;
+            }
+
+            // Enthalpy (Linear scale from 100 to 500 kJ/kg)
+            const minH = 100;
+            const maxH = 500;
+            
+            function getCanvasX(enthalpy) {
+                const ratio = (enthalpy - minH) / (maxH - minH);
+                return paddingLeft + ratio * w;
+            }
+
+            // Draw grid lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            
+            // Pressure labels (Y grid)
+            const pGridValues = [20, 50, 100, 200, 500, 1000, 2000];
+            pGridValues.forEach(val => {
+                const y = getCanvasY(val);
+                ctx.beginPath();
+                ctx.moveTo(paddingLeft, y);
+                ctx.lineTo(canvas.width - paddingRight, y);
+                ctx.stroke();
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+                ctx.font = '7px Orbitron, monospace';
+                ctx.textAlign = 'right';
+                ctx.fillText(val, paddingLeft - 5, y + 2.5);
+            });
+
+            // Enthalpy labels (X grid)
+            const hGridValues = [150, 200, 250, 300, 350, 400, 450];
+            hGridValues.forEach(val => {
+                const x = getCanvasX(val);
+                ctx.beginPath();
+                ctx.moveTo(x, paddingTop);
+                ctx.lineTo(x, canvas.height - paddingBottom);
+                ctx.stroke();
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+                ctx.font = '7px Orbitron, monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(val, x, canvas.height - paddingBottom + 12);
+            });
+
+            // Draw Axis lines
+            ctx.strokeStyle = 'rgba(0, 243, 255, 0.25)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(paddingLeft, paddingTop);
+            ctx.lineTo(paddingLeft, canvas.height - paddingBottom);
+            ctx.lineTo(canvas.width - paddingRight, canvas.height - paddingBottom);
+            ctx.stroke();
+
+            // Axis Unit labels
+            ctx.fillStyle = 'rgba(0, 243, 255, 0.6)';
+            ctx.font = '6.5px Orbitron, monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText("P (PSI)", paddingLeft - 5, paddingTop - 4);
+            ctx.textAlign = 'right';
+            ctx.fillText("h (kJ/kg)", canvas.width - paddingRight, canvas.height - paddingBottom - 4);
+
+            // Draw selected Refrigerant Vapor Dome
+            const profile = refrigProfiles[activeRefrigerant];
+            ctx.strokeStyle = 'rgba(0, 243, 255, 0.4)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            // Loop pressures to draw saturation dome curve
+            let firstPoint = true;
+            // Draw liquid curve (left)
+            for (let p = 12; p <= profile.pCrit; p *= 1.1) {
+                const hL = profile.hCrit - profile.widthF * Math.sqrt(profile.pCrit - p);
+                const x = getCanvasX(hL);
+                const y = getCanvasY(p);
+                if (firstPoint) {
+                    ctx.moveTo(x, y);
+                    firstPoint = false;
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            // Draw vapor curve (right, reverse order down)
+            for (let p = profile.pCrit; p >= 12; p /= 1.1) {
+                const hV = profile.hCrit + profile.widthF * Math.sqrt(profile.pCrit - p);
+                const x = getCanvasX(hV);
+                const y = getCanvasY(p);
+                ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Trace the four refrigerant cycle lines
+            const pt1 = calcData.p1;
+            const pt2 = calcData.p2;
+            const pt3 = calcData.p3;
+            const pt4 = calcData.p4;
+
+            const cX1 = getCanvasX(pt1[0]); const cY1 = getCanvasY(pt1[1]);
+            const cX2 = getCanvasX(pt2[0]); const cY2 = getCanvasY(pt2[1]);
+            const cX3 = getCanvasX(pt3[0]); const cY3 = getCanvasY(pt3[1]);
+            const cX4 = getCanvasX(pt4[0]); const cY4 = getCanvasY(pt4[1]);
+
+            ctx.lineWidth = 2.5;
+
+            // Segment 1-2: Compression (Superheated vapor climb)
+            ctx.strokeStyle = 'var(--accent-magenta)';
+            ctx.beginPath();
+            ctx.moveTo(cX1, cY1);
+            ctx.lineTo(cX2, cY2);
+            ctx.stroke();
+
+            // Segment 2-3: Condensation (Cooling down to saturation, condensation, subcooling)
+            ctx.strokeStyle = 'var(--accent-amber)';
+            ctx.beginPath();
+            ctx.moveTo(cX2, cY2);
+            ctx.lineTo(cX3, cY3);
+            ctx.stroke();
+
+            // Segment 3-4: Expansion Valve (Isenthalpic vertical drop)
+            ctx.strokeStyle = 'var(--accent-purple)';
+            ctx.beginPath();
+            ctx.moveTo(cX3, cY3);
+            ctx.lineTo(cX4, cY4);
+            ctx.stroke();
+
+            // Segment 4-1: Evaporator (Latent boiling)
+            ctx.strokeStyle = 'var(--accent-cyan)';
+            ctx.beginPath();
+            ctx.moveTo(cX4, cY4);
+            ctx.lineTo(cX1, cY1);
+            ctx.stroke();
+
+            // Draw State Nodes & numbers
+            const states = [
+                { x: cX1, y: cY1, label: "1", color: "var(--accent-cyan)" },
+                { x: cX2, y: cY2, label: "2", color: "var(--accent-magenta)" },
+                { x: cX3, y: cY3, label: "3", color: "var(--accent-amber)" },
+                { x: cX4, y: cY4, label: "4", color: "var(--accent-purple)" }
+            ];
+
+            states.forEach(s => {
+                ctx.fillStyle = '#060814';
+                ctx.strokeStyle = s.color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, 4.5, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 7px Orbitron, monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(s.label, s.x, s.y - 8);
+            });
+        }
+
+        // SVG COMPONENTS ANIMATION TICKER
+        function animateSVGComponents() {
+            if (isSimRunning) {
+                // Fan Rotations modulated by speed ratio
+                const speedMult = simParams.compSpeed / 60;
+                
+                // Evaporator Fan (Indoor)
+                indoorFanAngle += 4 * speedMult;
+                dom.indoorFan.setAttribute('transform', `rotate(${indoorFanAngle})`);
+
+                // Condenser Fan (Outdoor)
+                // If dirty condenser fault, fan is running sluggishly or off
+                let outdoorMultiplier = speedMult;
+                if (currentFault === 'dirtycondenser') outdoorMultiplier *= 0.25;
+                outdoorFanAngle += 5 * outdoorMultiplier;
+                dom.outdoorFan.setAttribute('transform', `rotate(${outdoorFanAngle})`);
+
+                // Compressor Piston Vibration
+                pistonCycle += 0.2 * speedMult;
+                const scaleVal = 1 + Math.sin(pistonCycle) * 0.05;
+                const vibrateX = Math.cos(pistonCycle) * 1.2;
+                document.getElementById('compressorPiston').setAttribute('transform', `translate(630, 355) scale(${scaleVal}) translate(${vibrateX}, 0)`);
+            }
+            animationFrameId = requestAnimationFrame(animateSVGComponents);
+        }
+
+        // CONTROL ACTIONS
+        function toggleSimulation() {
+            sound.playClick();
+            isSimRunning = !isSimRunning;
+            const playBtn = document.getElementById('playBtn');
+            if (isSimRunning) {
+                playBtn.textContent = '⏸️ Pause Sim';
+                playBtn.classList.remove('danger');
+                playBtn.classList.add('primary');
+                // Resume flowing dashlines
+                updateFlowSpeed(flowSpeedScale);
+            } else {
+                playBtn.textContent = '▶️ Run Sim';
+                playBtn.classList.remove('primary');
+                playBtn.classList.add('danger');
+                // Freeze flow dashlines
+                dom.flowSuction.style.animationPlayState = 'paused';
+                dom.flowDischarge.style.animationPlayState = 'paused';
+                dom.flowLiquid.style.animationPlayState = 'paused';
+                dom.flowExpansion.style.animationPlayState = 'paused';
+            }
+        }
+
+        function resetSimulation() {
+            sound.playClick();
+            
+            // Reset simulation configurations
+            simParams.indoorTemp = 75;
+            simParams.outdoorTemp = 95;
+            simParams.compSpeed = 60;
+            simParams.valveOpening = 60;
+
+            dom.slideIndoorTemp.value = 75;
+            dom.slideOutdoorTemp.value = 95;
+            dom.slideCompSpeed.value = 60;
+            dom.slideValveOpening.value = 60;
+
+            dom.valIndoorTemp.textContent = '75 °F';
+            dom.valOutdoorTemp.textContent = '95 °F';
+            dom.valCompSpeed.textContent = '60 Hz';
+            dom.valValveOpening.textContent = '60 %';
+
+            dom.overlayIndoor.textContent = '75';
+            dom.overlayOutdoor.textContent = '95';
+
+            setFault('normal');
+            setRefrigerant('R410A');
+            selectStage('intro');
+
+            if (!isSimRunning) {
+                toggleSimulation();
+            } else {
+                runThermodynamicCalculation();
+            }
+        }
+
+        function updateFlowSpeed(val) {
+            flowSpeedScale = parseFloat(val);
+            document.getElementById('valFlowSpeed').textContent = `${flowSpeedScale.toFixed(1)}x`;
+            
+            if (!isSimRunning) return;
+            
+            // Map speed to CSS animation speed dur
+            const dur = 2 / flowSpeedScale;
+            
+            dom.flowSuction.style.animationPlayState = 'running';
+            dom.flowDischarge.style.animationPlayState = 'running';
+            dom.flowLiquid.style.animationPlayState = 'running';
+            dom.flowExpansion.style.animationPlayState = 'running';
+            
+            dom.flowSuction.style.animationDuration = `${dur}s`;
+            dom.flowDischarge.style.animationDuration = `${dur * 0.8}s`;
+            dom.flowLiquid.style.animationDuration = `${dur * 1.2}s`;
+            dom.flowExpansion.style.animationDuration = `${dur * 0.9}s`;
+        }
+
+        function setRefrigerant(refId) {
+            sound.playClick();
+            activeRefrigerant = refId;
+            
+            // Toggle active buttons
+            const btns = document.querySelectorAll('.selector-btn');
+            btns.forEach(btn => {
+                if (btn.textContent.includes(refrigProfiles[refId].name) || btn.getAttribute('onclick').includes(refId)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            runThermodynamicCalculation();
+        }
+
+        function setFault(faultId) {
+            sound.playClick();
+            currentFault = faultId;
+
+            // Toggle active classes
+            const btns = document.querySelectorAll('.fault-btn');
+            btns.forEach(btn => {
+                if (btn.id === `fault-${faultId}`) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            runThermodynamicCalculation();
+        }
+
+        function selectStage(stageId) {
+            sound.playClick();
+            selectedStageId = stageId;
+
+            // Toggle SVG active styles
+            const boxes = document.querySelectorAll('.svg-comp-box');
+            boxes.forEach(box => {
+                if (box.id === `svg-${stageId}`) {
+                    box.classList.add('active');
+                } else {
+                    box.classList.remove('active');
+                }
+            });
+
+            // Toggle details panel active item
+            const details = document.querySelectorAll('.stage-detail');
+            details.forEach(det => {
+                if (det.id === `detail-${stageId}`) {
+                    det.classList.add('active');
+                } else {
+                    det.classList.remove('active');
+                }
+            });
+        }
+
+        function toggleAudio() {
+            const status = !sound.enabled;
+            sound.setAudio(status);
+            
+            const btn = document.getElementById('audioToggle');
+            btn.textContent = status ? '🔊 Sound ON' : '🔇 Sound OFF';
+            if (status) {
+                btn.classList.add('primary');
+                sound.playClick();
+            } else {
+                btn.classList.remove('primary');
+            }
+        }
+
+        // MODAL MANAGEMENT
+        function openModal(modalId) {
+            sound.playClick();
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            sound.playClick();
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // QUIZ GRADING MODULE
+        let score = 0;
+        let answeredQuestions = [false, false, false, false, false];
+
+        function answerQuestion(btn, isCorrect) {
+            const card = btn.closest('.quiz-q-card');
+            const qIndex = parseInt(card.dataset.q);
+            
+            if (answeredQuestions[qIndex]) return; // disable double grading
+            answeredQuestions[qIndex] = true;
+
+            // Highlight buttons
+            const opts = card.querySelectorAll('.quiz-opt-btn');
+            opts.forEach(opt => {
+                opt.style.cursor = 'default';
+            });
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                score++;
+                sound.playChime(true);
+            } else {
+                btn.classList.add('incorrect');
+                sound.playChime(false);
+                // Highlight correct one
+                opts.forEach(opt => {
+                    if (opt.getAttribute('onclick').includes('true')) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+
+            // Proceed to next card after delay
+            setTimeout(() => {
+                card.classList.remove('active');
+                const nextCard = document.querySelector(`.quiz-q-card[data-q="${qIndex + 1}"]`);
+                if (nextCard) {
+                    nextCard.classList.add('active');
+                } else {
+                    // Show score summary card
+                    const scoreCard = document.getElementById('quizScoreCard');
+                    scoreCard.style.display = 'flex';
+                    document.getElementById('scoreNum').textContent = `${score} / 5`;
+                    
+                    const comment = document.getElementById('scoreComment');
+                    if (score === 5) comment.textContent = "🏆 HVAC Master Class! Perfect score on refrigerant thermodynamics.";
+                    else if (score >= 3) comment.textContent = "👍 Proficient Technician! You understand the fundamental components.";
+                    else comment.textContent = "⚠️ Training Required. Review component analysis cards and re-run the simulation.";
+                }
+            }, 1800);
+        }
+
+        function resetQuiz() {
+            sound.playClick();
+            score = 0;
+            answeredQuestions = [false, false, false, false, false];
+            
+            // Reset classes
+            const opts = document.querySelectorAll('.quiz-opt-btn');
+            opts.forEach(opt => {
+                opt.className = 'quiz-opt-btn';
+                opt.style.cursor = 'pointer';
+            });
+
+            // Hide summary
+            document.getElementById('quizScoreCard').style.display = 'none';
+
+            // Reset visibility
+            const cards = document.querySelectorAll('.quiz-q-card');
+            cards.forEach(card => card.classList.remove('active'));
+            cards[0].classList.add('active');
+        }
+
+        // Initialize script on document load
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>

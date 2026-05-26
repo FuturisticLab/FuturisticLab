@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All-in-One Drag & Drop Editor</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; }
+    #toolbar {
+      background: #222; color: #fff; padding: 10px;
+      display: flex; gap: 10px; align-items: center;
+      position: sticky; top: 0; z-index: 10;
+    }
+    #canvas {
+      position: relative;
+      width: 100vw; height: 90vh;
+      background: #f4f4f4;
+      overflow: auto;
+    }
+    .draggable {
+      position: absolute;
+      min-width: 60px; min-height: 30px;
+      border: 1px solid #888;
+      border-radius: 6px;
+      background: #fff;
+      padding: 5px;
+      cursor: move;
+      user-select: none;
+      box-shadow: 1px 1px 8px #aaa2;
+    }
+    .selected { border: 2px solid #0078d7; }
+    .line {
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .arrow {
+      stroke: #333;
+      stroke-width: 2;
+      marker-end: url(#arrowhead);
+    }
+    .delete-btn {
+      position: absolute;
+      top: -10px; right: -10px;
+      background: #f33; color: #fff;
+      border: none; border-radius: 50%;
+      width: 20px; height: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      display: none;
+      z-index: 2;
+    }
+    .draggable:hover .delete-btn { display: block; }
+    input[type="file"] { display: none; }
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <button onclick="addText()">Add Text</button>
+    <button onclick="addShape('rect')">Add Rectangle</button>
+    <button onclick="addShape('ellipse')">Add Ellipse</button>
+    <button onclick="startLine()">Connect (Line/Arrow)</button>
+    <label>
+      <button>Add Image</button>
+      <input type="file" id="imgInput" accept="image/*" onchange="addImage(event)">
+    </label>
+    <button onclick="deleteSelected()">Delete</button>
+    <button onclick="clearCanvas()">Clear</button>
+    <button onclick="saveCanvas()">Save</button>
+    <button onclick="loadCanvas()">Load</button>
+  </div>
+  <div id="canvas"></div>
+
+  <!-- Arrowhead marker for SVG lines -->
+  <svg width="0" height="0">
+    <defs>
+      <marker id="arrowhead" markerWidth="10" markerHeight="7"
+        refX="10" refY="3.5" orient="auto" markerUnits="strokeWidth">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+      </marker>
+    </defs>
+  </svg>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    let selected = null;
+    let offset = {x:0, y:0};
+    let zIndex = 1;
+    let lineStart = null;
+    let lines = [];
+
+    // ---- Utility Functions ----
+    function makeId() {
+      return 'id-' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function setSelected(el) {
+      if (selected) selected.classList.remove('selected');
+      selected = el;
+      if (selected) selected.classList.add('selected');
+    }
+
+    // ---- Drag & Drop ----
+    function initDrag(el) {
+      el.onmousedown = function(e) {
+        if (e.target.classList.contains('delete-btn')) return;
+        setSelected(el);
+        offset.x = e.offsetX;
+        offset.y = e.offsetY;
+        el.style.zIndex = ++zIndex;
+        document.onmousemove = function(ev) {
+          el.style.left = (ev.pageX - canvas.offsetLeft - offset.x) + 'px';
+          el.style.top = (ev.pageY - canvas.offsetTop - offset.y) + 'px';
+          updateLines();
+        }
+        document.onmouseup = function() {
+          document.onmousemove = null;
+          document.onmouseup = null;
+          saveCanvas();
+        }
+      }
+    }
+
+    // ---- Add Elements ----
+    function addText() {
+      const el = document.createElement('div');
+      el.className = 'draggable';
+      el.contentEditable = true;
+      el.innerText = 'Double-click to edit';
+      el.style.left = '50px';
+      el.style.top = '50px';
+      el.id = makeId();
+      el.ondblclick = () => { el.contentEditable = true; el.focus(); };
+      el.onblur = () => { el.contentEditable = false; saveCanvas(); };
+      addDeleteButton(el);
+      canvas.appendChild(el);
+      initDrag(el);
+      setSelected(el);
+      saveCanvas();
+    }
+
+    function addShape(type) {
+      const el = document.createElement('div');
+      el.className = 'draggable';
+      el.style.left = '100px';
+      el.style.top = '100px';
+      el.id = makeId();
+      el.style.width = '100px';
+      el.style.height = '60px';
+      el.style.display = 'flex';
+      el.style.alignItems = 'center';
+      el.style.justifyContent = 'center';
+      el.contentEditable = true;
+      el.innerText = type === 'rect' ? 'Rectangle' : 'Ellipse';
+      if (type === 'ellipse') {
+        el.style.borderRadius = '50%';
+      }
+      addDeleteButton(el);
+      canvas.appendChild(el);
+      initDrag(el);
+      setSelected(el);
+      saveCanvas();
+    }
+
+    function addImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const el = document.createElement('div');
+        el.className = 'draggable';
+        el.style.left = '120px';
+        el.style.top = '120px';
+        el.id = makeId();
+        el.style.width = '120px';
+        el.style.height = '80px';
+        el.style.padding = '0';
+        el.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:contain;">`;
+        addDeleteButton(el);
+        canvas.appendChild(el);
+        initDrag(el);
+        setSelected(el);
+        saveCanvas();
+      }
+      reader.readAsDataURL(file);
+      // Reset input so the same image can be uploaded again
+      event.target.value = '';
+    }
+
+    // ---- Delete, Clear ----
+    function addDeleteButton(el) {
+      const btn = document.createElement('button');
+      btn.innerText = '×';
+      btn.className = 'delete-btn';
+      btn.onclick = function(e) {
+        e.stopPropagation();
+        if (el === selected) selected = null;
+        el.remove();
+        updateLines();
+        saveCanvas();
+      };
+      el.appendChild(btn);
+    }
+
+    function deleteSelected() {
+      if (selected) {
+        selected.remove();
+        selected = null;
+        updateLines();
+        saveCanvas();
+      }
+    }
+
+    function clearCanvas() {
+      if (confirm('Clear everything?')) {
+        canvas.innerHTML = '';
+        lines = [];
+        saveCanvas();
+      }
+    }
+
+    // ---- Connect Lines/Arrows ----
+    function startLine() {
+      alert('Click two shapes to connect.');
+      lineStart = null;
+      canvas.onclick = function(e) {
+        if (e.target.classList.contains('draggable')) {
+          if (!lineStart) {
+            lineStart = e.target;
+            lineStart.classList.add('selected');
+          } else if (lineStart !== e.target) {
+            connect(lineStart, e.target);
+            lineStart.classList.remove('selected');
+            lineStart = null;
+            canvas.onclick = null;
+            saveCanvas();
+          }
+        }
+      }
+    }
+
+    function connect(from, to) {
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      line.classList.add('line');
+      line.setAttribute('width', canvas.offsetWidth);
+      line.setAttribute('height', canvas.offsetHeight);
+      line.style.left = '0';
+      line.style.top = '0';
+      line.style.position = 'absolute';
+      line.style.pointerEvents = 'none';
+      line.innerHTML = `<line class="arrow" x1="0" y1="0" x2="0" y2="0"/>`;
+      canvas.appendChild(line);
+      lines.push({from: from.id, to: to.id, line});
+      updateLines();
+    }
+
+    function updateLines() {
+      lines.forEach(l => {
+        const fromEl = document.getElementById(l.from);
+        const toEl = document.getElementById(l.to);
+        if (!fromEl || !toEl) return;
+        const rect1 = fromEl.getBoundingClientRect();
+        const rect2 = toEl.getBoundingClientRect();
+        const cRect = canvas.getBoundingClientRect();
+        const x1 = rect1.left + rect1.width/2 - cRect.left;
+        const y1 = rect1.top + rect1.height/2 - cRect.top;
+        const x2 = rect2.left + rect2.width/2 - cRect.left;
+        const y2 = rect2.top + rect2.height/2 - cRect.top;
+        l.line.setAttribute('width', canvas.offsetWidth);
+        l.line.setAttribute('height', canvas.offsetHeight);
+        const svgLine = l.line.querySelector('line');
+        svgLine.setAttribute('x1', x1);
+        svgLine.setAttribute('y1', y1);
+        svgLine.setAttribute('x2', x2);
+        svgLine.setAttribute('y2', y2);
+      });
+    }
+
+    // ---- Save/Load ----
+    function saveCanvas() {
+      const elements = [];
+      canvas.querySelectorAll('.draggable').forEach(el => {
+        let type = 'text';
+        let content = el.innerText;
+        if (el.querySelector('img')) {
+          type = 'image';
+          content = el.querySelector('img').src;
+        } else if (el.style.borderRadius === '50%') {
+          type = 'ellipse';
+        } else if (el.innerText === 'Rectangle') {
+          type = 'rect';
+        }
+        elements.push({
+          id: el.id,
+          type,
+          content,
+          left: el.style.left,
+          top: el.style.top,
+          width: el.style.width,
+          height: el.style.height,
+        });
+      });
+      const linesSave = lines.map(l => ({from: l.from, to: l.to}));
+      localStorage.setItem('canvasState', JSON.stringify({elements, lines: linesSave}));
+    }
+
+    function loadCanvas() {
+      const state = JSON.parse(localStorage.getItem('canvasState') || '{}');
+      canvas.innerHTML = '';
+      lines = [];
+      if (!state.elements) return;
+      state.elements.forEach(e => {
+        let el;
+        if (e.type === 'image') {
+          el = document.createElement('div');
+          el.innerHTML = `<img src="${e.content}" style="width:100%;height:100%;object-fit:contain;">`;
+        } else {
+          el = document.createElement('div');
+          el.innerText = e.content;
+          el.contentEditable = true;
+          if (e.type === 'ellipse') el.style.borderRadius = '50%';
+        }
+        el.className = 'draggable';
+        el.id = e.id;
+        el.style.left = e.left;
+        el.style.top = e.top;
+        el.style.width = e.width;
+        el.style.height = e.height;
+        addDeleteButton(el);
+        canvas.appendChild(el);
+        initDrag(el);
+      });
+      if (state.lines) {
+        state.lines.forEach(l => {
+          const fromEl = document.getElementById(l.from);
+          const toEl = document.getElementById(l.to);
+          if (fromEl && toEl) connect(fromEl, toEl);
+        });
+      }
+      saveCanvas();
+      setTimeout(updateLines, 100);
+    }
+
+    // ---- Event Listeners ----
+    window.addEventListener('resize', updateLines);
+    canvas.addEventListener('click', function(e) {
+      if (e.target === canvas) setSelected(null);
+      updateLines();
+    });
+
+    // ---- Initial Load ----
+    loadCanvas();
+  </script>
+</body>
+</html>

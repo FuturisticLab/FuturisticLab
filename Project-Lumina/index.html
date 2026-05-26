@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Lumina</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000; /* Black background */
+            color: #e0f7fa; /* Light cyan text for contrast */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        .neon-border {
+            border: 2px solid transparent; /* Base transparent border */
+            box-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF, 0 0 15px #00FFFF, 0 0 20px #00FFFF; /* Blue neon glow */
+            transition: all 0.3s ease-in-out;
+        }
+
+        .neon-border:hover {
+            box-shadow: 0 0 10px #00FFFF, 0 0 20px #00FFFF, 0 0 30px #00FFFF, 0 0 40px #00FFFF, 0 0 50px #00FFFF; /* Intense glow on hover */
+        }
+
+        .neon-text {
+            color: #00FFFF; /* Neon blue text color */
+            text-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF; /* Subtle text glow */
+        }
+
+        .dynamic-element {
+            opacity: 0; /* Start hidden */
+            transform: translateY(20px); /* Start slightly below */
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .dynamic-element.is-visible {
+            opacity: 1; /* Fade in */
+            transform: translateY(0); /* Move to original position */
+        }
+
+        /* Custom animation for background */
+        @keyframes neon-pulse {
+            0% {
+                opacity: 0.4;
+            }
+            50% {
+                opacity: 0.7;
+            }
+            100% {
+                opacity: 0.4;
+            }
+        }
+
+        .pulsing-neon-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0,255,255,0.1) 0%, rgba(0,0,0,0) 70%); /* Subtle radial glow */
+            animation: neon-pulse 4s infinite ease-in-out;
+            pointer-events: none; /* Allow clicks to pass through */
+            z-index: 0; /* Behind content */
+        }
+    </style>
+</head>
+<body class="relative">
+    <div class="pulsing-neon-bg"></div>
+
+    <header class="relative z-10 text-white py-4 px-6 md:px-12 border-b border-cyan-500 border-opacity-30">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-2xl font-bold neon-text">Project Lumina</div>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="#" class="hover:text-cyan-300 transition duration-300">Home</a></li>
+                    <li><a href="#" class="hover:text-cyan-300 transition duration-300">About</a></li>
+                    <li><a href="#" class="hover:text-cyan-300 transition duration-300">Services</a></li>
+                    <li><a href="#" class="hover:text-cyan-300 transition duration-300">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="relative z-10 text-white text-center py-20 px-6 md:py-32">
+        <div class="container mx-auto">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 neon-text dynamic-element">Innovate. Connect. Evolve.</h1>
+            <p class="text-lg md:text-xl mb-8 dynamic-element" style="transition-delay: 0.2s;">Step into the future of digital experiences.</p>
+            <button class="bg-transparent text-cyan-300 font-semibold py-3 px-8 rounded-md neon-border dynamic-element" style="transition-delay: 0.4s;">Discover More</button>
+        </div>
+    </section>
+
+    <section class="relative z-10 text-white py-16 px-6 md:px-12">
+        <div class="container mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div class="dynamic-element">
+                <h2 class="text-3xl font-bold mb-4 neon-text">Our Vision</h2>
+                <p class="mb-4">We are building the next generation of digital platforms, focusing on seamless interaction and groundbreaking technology. Our mission is to create intuitive systems that adapt to your needs, making complex tasks simple and accessible.</p>
+                <p>Through innovative design and dynamic functionality, we aim to provide an unparalleled user experience that feels both futuristic and familiar.</p>
+            </div>
+            <div class="neon-border p-6 rounded-lg dynamic-element" style="transition-delay: 0.2s;">
+                <div class="w-full h-48 bg-cyan-900 bg-opacity-20 flex items-center justify-center rounded-md">
+                    <span class="neon-text text-xl">Futuristic Graphic Placeholder</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="relative z-10 text-white py-16 px-6 md:px-12">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12 neon-text dynamic-element">Our Capabilities</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="neon-border p-6 rounded-lg text-center dynamic-element" style="transition-delay: 0.1s;">
+                    <div class="text-4xl mb-4 neon-text">⚙️</div> <h3 class="text-xl font-semibold mb-2">Advanced AI</h3>
+                    <p>Leveraging cutting-edge artificial intelligence to personalize your experience.</p>
+                </div>
+                <div class="neon-border p-6 rounded-lg text-center dynamic-element" style="transition-delay: 0.2s;">
+                     <div class="text-4xl mb-4 neon-text">🌐</div> <h3 class="text-xl font-semibold mb-2">Seamless Integration</h3>
+                    <p>Connecting disparate systems into a unified, intuitive platform.</p>
+                </div>
+                <div class="neon-border p-6 rounded-lg text-center dynamic-element" style="transition-delay: 0.3s;">
+                     <div class="text-4xl mb-4 neon-text">✨</div> <h3 class="text-xl font-semibold mb-2">Dynamic Interfaces</h3>
+                    <p>Interfaces that adapt and evolve based on user interaction and data.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="relative z-10 text-white text-center py-8 px-6 md:px-12 border-t border-cyan-500 border-opacity-30">
+        <div class="container mx-auto">
+            <p>&copy; 2025 Project Lumina. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple Intersection Observer for dynamic elements
+        document.addEventListener('DOMContentLoaded', () => {
+            const dynamicElements = document.querySelectorAll('.dynamic-element');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target); // Stop observing once visible
+                    }
+                });
+            }, {
+                threshold: 0.1 // Trigger when 10% of the element is visible
+            });
+
+            dynamicElements.forEach(element => {
+                observer.observe(element);
+            });
+        });
+    </script>
+</body>
+</html>

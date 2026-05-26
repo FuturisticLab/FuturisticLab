@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEURAL PROMPT SYNTHESIZER v1.0</title>
+    <!-- Google Fonts for futuristic look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Decorative Tech Elements -->
+    <div class="grid-overlay"></div>
+    <div class="scanlines"></div>
+
+    <div class="app-container">
+        <!-- Dashboard Header -->
+        <header class="hud-header">
+            <div class="header-left">
+                <div class="status-indicator online"></div>
+                <h1 class="glitch-title" data-text="NEURAL PROMPT SYNTHESIZER">NEURAL PROMPT SYNTHESIZER</h1>
+                <span class="system-version">v1.0.4-SYS_ACTIVE</span>
+            </div>
+            <div class="header-right">
+                <button id="sound-toggle" class="hud-button-small" title="Toggle sound effects">
+                    <span class="btn-icon">🔊</span> AUDIO: ACTIVE
+                </button>
+            </div>
+        </header>
+
+        <!-- Stepper HUD Tracker -->
+        <div class="stepper-hud">
+            <div class="step-node active" data-step="0"><span class="step-num">01</span><span class="step-label">TASK</span></div>
+            <div class="step-connector"></div>
+            <div class="step-node" data-step="1"><span class="step-num">02</span><span class="step-label">CONTEXT</span></div>
+            <div class="step-connector"></div>
+            <div class="step-node" data-step="2"><span class="step-num">03</span><span class="step-label">LIMITS</span></div>
+            <div class="step-connector"></div>
+            <div class="step-node" data-step="3"><span class="step-num">04</span><span class="step-label">EXAMPLES</span></div>
+            <div class="step-connector"></div>
+            <div class="step-node" data-step="4"><span class="step-num">05</span><span class="step-label">TONE</span></div>
+            <div class="step-connector"></div>
+            <div class="step-node" data-step="5"><span class="step-num">06</span><span class="step-label">COMPILE</span></div>
+        </div>
+
+        <!-- Main Dashboard Split Screen -->
+        <main class="dashboard-grid">
+            <!-- Left Terminal: Controls and Inputs -->
+            <section class="hud-panel left-panel">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">⚡</span> INPUT TERMINAL</h2>
+                    <span class="panel-subtitle" id="step-name">STEP 01: Core Task Definition</span>
+                </div>
+                <div class="panel-body">
+                    <!-- Instruction Display -->
+                    <div class="console-instruction">
+                        <p id="instruction-text">Define the primary action you want the AI engine to perform.</p>
+                    </div>
+
+                    <!-- Dynamic Input Interface Container -->
+                    <div id="dynamic-input-container">
+                        <!-- Step components will be injected here or toggled -->
+                        
+                        <!-- Textarea input (shared or step-specific) -->
+                        <div class="input-wrapper" id="textarea-input-wrapper">
+                            <textarea id="user-input" placeholder="Initiating core directives..."></textarea>
+                        </div>
+
+                        <!-- Interactive helper tools container -->
+                        <div id="step-assistants" class="step-assistants">
+                            <!-- Injected dynamically based on step -->
+                        </div>
+                    </div>
+                </div>
+                <!-- Controls -->
+                <div class="panel-footer">
+                    <button id="prev-button" class="hud-button secondary" disabled>
+                        <span class="btn-arrow">◀</span> BACK
+                    </button>
+                    <button id="next-button" class="hud-button primary">
+                        NEXT <span class="btn-arrow">▶</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Terminal: Live Code Visualizer -->
+            <section class="hud-panel right-panel">
+                <div class="panel-header">
+                    <h2><span class="panel-icon">👁</span> REAL-TIME PROMPT COMPILE HUD</h2>
+                    <span class="panel-subtitle">SYNTAX INTEGRITY: NOMINAL</span>
+                </div>
+                <div class="panel-body compiler-hud">
+                    <pre class="prompt-code-display"><code id="compiler-display">
+<span class="code-comment">// INITIALIZING SYSTEM SYNTAX BLOCKS...</span>
+<span class="code-tag">[TASK]</span>: <span class="code-placeholder" id="hud-task">&lt;Pending Directive&gt;</span>
+
+<span class="code-tag">[CONTEXT]</span>: <span class="code-placeholder" id="hud-context">&lt;Pending Background parameters&gt;</span>
+
+<span class="code-tag">[CONSTRAINTS]</span>: <span class="code-placeholder" id="hud-constraints">&lt;Pending Limits&gt;</span>
+
+<span class="code-tag">[EXAMPLES]</span>: <span class="code-placeholder" id="hud-examples">&lt;Optional Few-shot parameters&gt;</span>
+
+<span class="code-tag">[TONE_AND_FORMAT]</span>: <span class="code-placeholder" id="hud-tone-format">&lt;Pending Style Protocols&gt;</span>
+                    </code></pre>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- AI Core Simulator Console (Modal Overlay) -->
+    <div id="simulator-overlay" class="simulator-overlay" style="display: none;">
+        <div class="sim-container">
+            <header class="sim-header">
+                <div class="sim-title">
+                    <span class="sim-pulsar"></span>
+                    <h3>AI CORE SIMULATOR & COMPILER</h3>
+                </div>
+                <button id="sim-close-button" class="sim-close-btn">&times;</button>
+            </header>
+
+            <div class="sim-grid">
+                <!-- Compilation Output / Final Prompt Panel -->
+                <div class="sim-prompt-panel">
+                    <h4>COMPILED PROMPT DIRECTIVE</h4>
+                    <div class="compiled-prompt-scroll">
+                        <pre id="final-prompt-text"></pre>
+                    </div>
+                    <div class="sim-prompt-actions">
+                        <button id="copy-button" class="hud-button primary">
+                            📋 COPY DIRECTIVE
+                        </button>
+                        <button id="edit-button" class="hud-button secondary">
+                            🛠 EDIT BLOCKS
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Simulation Output Panel -->
+                <div class="sim-terminal-panel">
+                    <div class="sim-controls">
+                        <div class="selector-wrapper">
+                            <label for="model-selector">SELECT NEURAL CORE:</label>
+                            <select id="model-selector" class="hud-select">
+                                <option value="cyber-gpt">CYBER-GPT v4.0.9 (Standard)</option>
+                                <option value="neural-claude">NEURAL-CLAUDE v7.1-Prime (Analytical)</option>
+                                <option value="deepmind-nexus">DEEPMIND-NEXUS v9.3-Omega (Advanced)</option>
+                            </select>
+                        </div>
+                        <button id="run-simulation-button" class="hud-button accent">
+                            🚀 RUN SIMULATION
+                        </button>
+                    </div>
+
+                    <div class="sim-terminal-screen">
+                        <div class="terminal-logs" id="terminal-logs">
+                            <p class="term-line system-line">&gt; Ready for deployment. Select model core and initiate Simulation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

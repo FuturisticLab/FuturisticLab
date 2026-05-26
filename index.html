@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE LIVING WORKSPACE - FuturisticLab</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        header: ['Orbitron', 'sans-serif'],
+                        mono: ['Share Tech Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 1; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+        .pulse-dot-ring {
+            animation: pulse-ring 1.8s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+        }
+        .hud-grid {
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.95);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(34, 211, 238, 0.35);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(168, 85, 247, 0.55);
+        }
+    </style>
+</head>
+<body class="min-h-screen overflow-x-hidden bg-black text-white relative font-sans select-none">
+    <!-- Cosmic Background -->
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(80,120,255,0.18),transparent_45%),radial-gradient(circle_at_top_right,_rgba(255,0,200,0.15),transparent_35%),radial-gradient(circle_at_bottom_left,_rgba(0,255,255,0.12),transparent_35%)] pointer-events-none z-0"></div>
+    
+    <!-- Grid Overlay -->
+    <div class="absolute inset-0 hud-grid pointer-events-none z-0 opacity-50"></div>
+
+    <!-- Stars -->
+    <div id="stars-container" class="absolute inset-0 opacity-70 pointer-events-none z-0"></div>
+
+    <!-- Navigation -->
+    <div class="relative z-20 flex items-center justify-between px-6 md:px-10 py-6 border-b border-white/10 backdrop-blur-xl bg-white/5">
+        <div>
+            <div class="text-xl md:text-3xl font-black tracking-[0.25em] bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 bg-clip-text text-transparent font-header">
+                THE LIVING WORKSPACE
+            </div>
+            <div class="text-white/50 text-xs md:text-sm mt-1 tracking-[0.2em] uppercase font-mono">
+                Innovation Ecosystem Interface
+            </div>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <div class="hidden md:flex items-center gap-8 text-sm uppercase tracking-[0.2em] text-white/70 font-mono">
+                <a href="#universe-section" class="hover:text-cyan-300 transition">Universe</a>
+                <a href="#timeline-section" class="hover:text-cyan-300 transition">Timeline</a>
+                <a href="#feed-section" class="hover:text-cyan-300 transition">Live Stream</a>
+            </div>
+            <!-- Audio Controller -->
+            <button id="sound-toggle" class="px-4 py-2 border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 rounded-xl text-xs uppercase tracking-[0.15em] font-mono transition duration-300 flex items-center gap-2">
+                <span id="audio-icon">🔊</span> AUDIO: ON
+            </button>
+        </div>
+    </div>
+
+    <!-- Hero -->
+    <section class="relative z-10 px-6 md:px-10 pt-16 pb-6">
+        <div class="max-w-4xl">
+            <div class="inline-flex items-center gap-3 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-5 py-2 text-cyan-200 backdrop-blur-lg font-mono text-sm">
+                <div class="relative flex h-2 w-2">
+                    <span class="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 pulse-dot-ring"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-300"></span>
+                </div>
+                SYSTEM ONLINE
+            </div>
+
+            <h1 class="mt-8 text-5xl md:text-8xl font-black leading-[0.95] tracking-tight">
+                Your Portfolio
+                <br />
+                <span class="bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-500 bg-clip-text text-transparent">
+                    Becomes Alive
+                </span>
+            </h1>
+
+            <p class="mt-8 max-w-2xl text-base md:text-lg text-white/65 leading-relaxed">
+                A futuristic GitHub universe where repositories evolve into living systems,
+                timelines become neural rivers, and every innovation is transformed into
+                an explorable experience.
+            </p>
+
+            <div class="mt-10 flex flex-wrap gap-5">
+                <a href="#universe-section" class="rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-500 px-8 py-4 font-semibold text-black shadow-[0_0_40px_rgba(34,211,238,0.45)] transition hover:scale-105 inline-block text-center">
+                    Enter The Universe
+                </a>
+
+                <a href="#timeline-section" class="rounded-2xl border border-white/10 bg-white/5 px-8 py-4 font-semibold backdrop-blur-xl transition hover:border-cyan-400/40 hover:bg-cyan-500/10 inline-block text-center">
+                    Explore Timeline
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Universe -->
+    <section id="universe-section" class="relative h-[800px] md:h-[1000px] overflow-hidden border-t border-b border-white/5 my-10 bg-black/10">
+        <!-- Floating Innovation Words -->
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-2xl left-[10%] top-[8%] animate-pulse" style="animation-duration: 3s;">Innovation</div>
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-xl left-[20%] top-[26%] animate-pulse" style="animation-duration: 4s;">Neural</div>
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-3xl left-[30%] top-[8%] animate-pulse" style="animation-duration: 5s;">Quantum</div>
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-xl left-[40%] top-[26%] animate-pulse" style="animation-duration: 6s;">Adaptive</div>
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-2xl left-[50%] top-[8%] animate-pulse" style="animation-duration: 7s;">Immersive</div>
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-3xl left-[60%] top-[26%] animate-pulse" style="animation-duration: 8s;">Intelligence</div>
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-xl left-[70%] top-[8%] animate-pulse" style="animation-duration: 9s;">Future</div>
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-2xl left-[80%] top-[26%] animate-pulse" style="animation-duration: 10s;">Dynamic</div>
+
+        <!-- Energy Field -->
+        <div class="absolute left-1/2 top-1/2 h-[750px] w-[750px] md:h-[1200px] w-[1200px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.18),transparent_60%)] blur-3xl animate-pulse" style="animation-duration: 5s;"></div>
+        
+        <!-- Central Orb -->
+        <div class="absolute left-1/2 top-1/2 z-20 flex h-48 w-48 md:h-72 md:w-72 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 shadow-[0_0_120px_rgba(59,130,246,0.65)] animate-pulse hover:scale-105 transition duration-500 cursor-pointer">
+            <div class="absolute inset-3 md:inset-4 rounded-full border border-white/20"></div>
+            <div class="absolute inset-8 md:inset-10 rounded-full border border-white/10"></div>
+
+            <div class="text-center px-4 md:px-6">
+                <div class="text-[10px] md:text-sm uppercase tracking-[0.3em] text-white/70 font-mono">
+                    Innovation Core
+                </div>
+                <div class="mt-1 md:mt-3 text-2xl md:text-4xl font-black font-header tracking-wider">
+                    NEXUS
+                </div>
+                <div class="mt-1 md:mt-2 text-white/70 text-[9px] md:text-sm leading-relaxed hidden md:block">
+                    Neural Creative Intelligence Engine
+                </div>
+            </div>
+        </div>
+
+        <!-- Rotating Data Rings -->
+        <div class="absolute left-1/2 top-1/2 h-[680px] w-[680px] md:h-[900px] md:w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-400/10 animate-spin" style="animation-duration: 60s;"></div>
+
+        <div class="absolute left-1/2 top-1/2 h-[580px] w-[580px] md:h-[760px] md:w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-purple-500/10 animate-spin" style="animation-duration: 40s; animation-direction: reverse;"></div>
+
+        <!-- Orbit Rings -->
+        <div class="absolute left-1/2 top-1/2 h-[530px] w-[530px] md:h-[700px] md:w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-400/10"></div>
+        <div class="absolute left-1/2 top-1/2 h-[380px] w-[380px] md:h-[520px] md:w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-purple-400/10"></div>
+
+        <!-- Project Worlds -->
+        
+        <!-- 1. NEXUS OS (Navigation Flow Menu) -->
+        <a href="./Navigation-Flow-Menu/index.html" class="project-world absolute top-[12%] md:top-[18%] left-[28%] md:left-[42%] w-40 h-40 md:w-56 md:h-56 group z-10 block">
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-cyan-400 to-blue-600 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 md:p-6 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
+                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-cyan-300 animate-pulse"></div>
+                <div class="text-lg md:text-2xl font-bold font-header text-white">NEXUS OS</div>
+                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">AI Operating System</div>
+                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
+                    <span>Explore</span>
+                    <span>↗</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 2. Quantum Net (Air Conditioner Cycle) -->
+        <a href="./Air-Conditioner-Cycle/index.html" class="project-world absolute bottom-[14%] md:bottom-[18%] right-[8%] md:right-[14%] w-32 h-32 md:w-40 md:h-40 group z-10 block">
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-purple-500 to-pink-500 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
+                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-pink-400 animate-pulse"></div>
+                <div class="text-base md:text-xl font-bold font-header text-white">Quantum Net</div>
+                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">Cybersecurity Grid</div>
+                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
+                    <span>Explore</span>
+                    <span>↗</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 3. Echo AI (AI Prompt Simulator) -->
+        <a href="./AI-Prompt-Simulator/index.html" class="project-world absolute top-[10%] md:top-[15%] right-[10%] md:right-[18%] w-36 h-36 md:w-44 md:h-44 group z-10 block">
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-blue-400 to-violet-500 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
+                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-violet-400 animate-pulse"></div>
+                <div class="text-base md:text-xl font-bold font-header text-white">Echo AI</div>
+                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">Conversational Intelligence</div>
+                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
+                    <span>Explore</span>
+                    <span>↗</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 4. Void Runner (Project-Lumina) -->
+        <a href="./Project-Lumina/index.html" class="project-world absolute bottom-[10%] md:bottom-[15%] left-[8%] md:left-[16%] w-36 h-36 md:w-48 md:h-48 group z-10 block">
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-pink-500 to-red-500 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
+                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-red-400 animate-pulse"></div>
+                <div class="text-base md:text-xl font-bold font-header text-white">Void Runner</div>
+                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">Immersive Racing Experience</div>
+                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
+                    <span>Explore</span>
+                    <span>↗</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 5. Memory Grid (Drag-Drop Editors) -->
+        <a href="./Drag-Drop-Editors/index.html" class="project-world absolute bottom-[26%] md:bottom-[30%] left-[28%] md:left-[40%] w-32 h-32 md:w-36 md:h-36 group z-10 block">
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-emerald-400 to-cyan-400 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
+                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-emerald-300 animate-pulse"></div>
+                <div class="text-base md:text-lg font-bold font-header text-white">Memory Grid</div>
+                <div class="mt-1 md:mt-2 text-[9px] md:text-xs text-white/60 leading-relaxed font-mono">Cognitive Innovation Lab</div>
+                <div class="mt-3 md:mt-5 flex items-center justify-between text-[8px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
+                    <span>Explore</span>
+                    <span>↗</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Neural Connections -->
+        <svg class="absolute inset-0 h-full w-full opacity-40 z-0 pointer-events-none">
+            <line x1="50%" y1="50%" x2="42%" y2="28%" stroke="url(#grad1)" strokeWidth="2" />
+            <line x1="50%" y1="50%" x2="86%" y2="82%" stroke="url(#grad1)" strokeWidth="2" />
+            <line x1="50%" y1="50%" x2="82%" y2="25%" stroke="url(#grad1)" strokeWidth="2" />
+            <line x1="50%" y1="50%" x2="24%" y2="85%" stroke="url(#grad1)" strokeWidth="2" />
+            <line x1="50%" y1="50%" x2="40%" y2="70%" stroke="url(#grad1)" strokeWidth="2" />
+
+            <defs>
+                <linearGradient id="grad1">
+                    <stop offset="0%" stop-color="#22d3ee" />
+                    <stop offset="100%" stop-color="#a855f7" />
+                </linearGradient>
+            </defs>
+        </svg>
+    </section>
+
+    <!-- Bottom Panels -->
+    <!-- Massive Innovation Feed -->
+    <section id="feed-section" class="relative z-10 px-6 md:px-10 pb-10">
+        <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <div class="text-xs md:text-sm uppercase tracking-[0.3em] text-cyan-300 font-mono">
+                    Living Innovation Stream
+                </div>
+                <div class="mt-2 text-2xl md:text-4xl font-black font-header">
+                    Real-Time Creative Consciousness
+                </div>
+            </div>
+
+            <div class="self-start rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-xs md:text-sm uppercase tracking-[0.2em] text-white/60 backdrop-blur-xl font-mono">
+                Connected To GitHub Neural Network
+            </div>
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4" id="stream-container">
+            <!-- Dynamic elements will be inserted/styled here -->
+            <div class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-2xl transition duration-500 hover:-translate-y-2 hover:border-cyan-300/30">
+                <div class="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100 bg-gradient-to-br from-cyan-500/10 to-purple-500/10" />
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between font-mono">
+                        <div class="text-xs uppercase tracking-[0.2em] text-cyan-300">Live Event</div>
+                        <div class="h-2 w-2 rounded-full bg-cyan-300 animate-pulse" />
+                    </div>
+                    <div class="mt-6 text-lg md:text-xl font-bold leading-snug font-header">AI generated a new interface evolution</div>
+                    <div class="mt-6 text-xs text-white/45 font-mono stream-time">12 seconds ago</div>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-2xl transition duration-500 hover:-translate-y-2 hover:border-cyan-300/30">
+                <div class="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100 bg-gradient-to-br from-cyan-500/10 to-purple-500/10" />
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between font-mono">
+                        <div class="text-xs uppercase tracking-[0.2em] text-cyan-300">Live Event</div>
+                        <div class="h-2 w-2 rounded-full bg-cyan-300 animate-pulse" />
+                    </div>
+                    <div class="mt-6 text-lg md:text-xl font-bold leading-snug font-header">Repository ecosystem expanded</div>
+                    <div class="mt-6 text-xs text-white/45 font-mono stream-time">45 seconds ago</div>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-2xl transition duration-500 hover:-translate-y-2 hover:border-cyan-300/30">
+                <div class="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100 bg-gradient-to-br from-cyan-500/10 to-purple-500/10" />
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between font-mono">
+                        <div class="text-xs uppercase tracking-[0.2em] text-cyan-300">Live Event</div>
+                        <div class="h-2 w-2 rounded-full bg-cyan-300 animate-pulse" />
+                    </div>
+                    <div class="mt-6 text-lg md:text-xl font-bold leading-snug font-header">Neural timeline synchronized</div>
+                    <div class="mt-6 text-xs text-white/45 font-mono stream-time">2 minutes ago</div>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-2xl transition duration-500 hover:-translate-y-2 hover:border-cyan-300/30">
+                <div class="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100 bg-gradient-to-br from-cyan-500/10 to-purple-500/10" />
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between font-mono">
+                        <div class="text-xs uppercase tracking-[0.2em] text-cyan-300">Live Event</div>
+                        <div class="h-2 w-2 rounded-full bg-cyan-300 animate-pulse" />
+                    </div>
+                    <div class="mt-6 text-lg md:text-xl font-bold leading-snug font-header">Interactive engine deployed</div>
+                    <div class="mt-6 text-xs text-white/45 font-mono stream-time">5 minutes ago</div>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-2xl transition duration-500 hover:-translate-y-2 hover:border-cyan-300/30">
+                <div class="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100 bg-gradient-to-br from-cyan-500/10 to-purple-500/10" />
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between font-mono">
+                        <div class="text-xs uppercase tracking-[0.2em] text-cyan-300">Live Event</div>
+                        <div class="h-2 w-2 rounded-full bg-cyan-300 animate-pulse" />
+                    </div>
+                    <div class="mt-6 text-lg md:text-xl font-bold leading-snug font-header">Memory visualization updated</div>
+                    <div class="mt-6 text-xs text-white/45 font-mono stream-time">10 minutes ago</div>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-2xl transition duration-500 hover:-translate-y-2 hover:border-cyan-300/30">
+                <div class="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100 bg-gradient-to-br from-cyan-500/10 to-purple-500/10" />
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between font-mono">
+                        <div class="text-xs uppercase tracking-[0.2em] text-cyan-300">Live Event</div>
+                        <div class="h-2 w-2 rounded-full bg-cyan-300 animate-pulse" />
+                    </div>
+                    <div class="mt-6 text-lg md:text-xl font-bold leading-snug font-header">Quantum animation system integrated</div>
+                    <div class="mt-6 text-xs text-white/45 font-mono stream-time">30 minutes ago</div>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-2xl transition duration-500 hover:-translate-y-2 hover:border-cyan-300/30">
+                <div class="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100 bg-gradient-to-br from-cyan-500/10 to-purple-500/10" />
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between font-mono">
+                        <div class="text-xs uppercase tracking-[0.2em] text-cyan-300">Live Event</div>
+                        <div class="h-2 w-2 rounded-full bg-cyan-300 animate-pulse"></div>
+                    </div>
+                    <div class="mt-6 text-lg md:text-xl font-bold leading-snug font-header">Immersive storytelling activated</div>
+                    <div class="mt-6 text-xs text-white/45 font-mono stream-time">1 hour ago</div>
+                </div>
+            </div>
+
+            <div class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-2xl transition duration-500 hover:-translate-y-2 hover:border-cyan-300/30">
+                <div class="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100 bg-gradient-to-br from-cyan-500/10 to-purple-500/10" />
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between font-mono">
+                        <div class="text-xs uppercase tracking-[0.2em] text-cyan-300">Live Event</div>
+                        <div class="h-2 w-2 rounded-full bg-cyan-300 animate-pulse"></div>
+                    </div>
+                    <div class="mt-6 text-lg md:text-xl font-bold leading-snug font-header">Adaptive intelligence online</div>
+                    <div class="mt-6 text-xs text-white/45 font-mono stream-time">2 hours ago</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline, Stats & observation section -->
+    <section id="timeline-section" class="relative z-10 grid gap-8 px-6 md:px-10 pb-16 lg:grid-cols-3">
+        <div class="rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur-2xl">
+            <div class="text-xs md:text-sm uppercase tracking-[0.25em] text-cyan-300 font-mono">
+                Innovation Timeline
+            </div>
+
+            <div class="mt-6 space-y-6">
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 h-3 w-3 rounded-full bg-cyan-300 shadow-[0_0_8px_#22d3ee]"></div>
+                    <div class="text-white/70">Built neural memory ecosystem</div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 h-3 w-3 rounded-full bg-cyan-300 shadow-[0_0_8px_#22d3ee]"></div>
+                    <div class="text-white/70">Created AI-powered interface engine</div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 h-3 w-3 rounded-full bg-cyan-300 shadow-[0_0_8px_#22d3ee]"></div>
+                    <div class="text-white/70">Designed adaptive portfolio universe</div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="mt-1 h-3 w-3 rounded-full bg-cyan-300 shadow-[0_0_8px_#22d3ee]"></div>
+                    <div class="text-white/70">Connected GitHub into living timeline</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur-2xl">
+            <div class="text-xs md:text-sm uppercase tracking-[0.25em] text-purple-300 font-mono">
+                Neural Statistics
+            </div>
+
+            <div class="mt-8 grid grid-cols-2 gap-6">
+                <div>
+                    <div class="text-3xl md:text-4xl font-black bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent font-header">
+                        5
+                    </div>
+                    <div class="mt-2 text-xs text-white/50 uppercase tracking-[0.15em] font-mono">
+                        Repositories
+                    </div>
+                </div>
+                <div>
+                    <div class="text-3xl md:text-4xl font-black bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent font-header">
+                        2.4K
+                    </div>
+                    <div class="mt-2 text-xs text-white/50 uppercase tracking-[0.15em] font-mono">
+                        Commits
+                    </div>
+                </div>
+                <div>
+                    <div class="text-3xl md:text-4xl font-black bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent font-header">
+                        41
+                    </div>
+                    <div class="mt-2 text-xs text-white/50 uppercase tracking-[0.15em] font-mono">
+                        Experiments
+                    </div>
+                </div>
+                <div>
+                    <div class="text-3xl md:text-4xl font-black bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent font-header">
+                        98%
+                    </div>
+                    <div class="mt-2 text-xs text-white/50 uppercase tracking-[0.15em] font-mono">
+                        Innovation Score
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-cyan-500/10 to-purple-500/10 p-8 backdrop-blur-2xl">
+            <div class="text-xs md:text-sm uppercase tracking-[0.25em] text-white/60 font-mono">
+                AI Observation
+            </div>
+
+            <div class="mt-8 text-2xl md:text-3xl font-bold leading-tight font-header">
+                “The portfolio itself becomes the greatest project.”
+            </div>
+
+            <div class="mt-6 text-white/60 leading-relaxed">
+                This is no longer a résumé.
+                <br />
+                It is an explorable innovation consciousness.
+            </div>
+
+            <a href="#universe-section" class="mt-10 rounded-2xl border border-cyan-400/30 bg-cyan-500/10 px-6 py-4 font-semibold text-cyan-200 transition hover:bg-cyan-500/20 inline-block text-center font-mono text-xs tracking-wider">
+                Activate Experience
+            </a>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>

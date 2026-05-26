@@ -1,0 +1,20 @@
+# OS Metadata
+.DS_Store
+Thumbs.db
+
+# IDEs/Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Local configurations
+.env
+.env.local
+.gemini/
+.env.development.local
+.env.test.local
+.env.production.local
