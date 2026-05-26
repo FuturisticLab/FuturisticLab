@@ -31,7 +31,7 @@ A groundbreaking, sci-fi themed typing performance game designed to improve typi
 
 ## 🎮 Live Demo
 
-[Play TypoVelocity Now!](https://yourusername.github.io/typovelocity) *(Update after deployment)*
+[Play TypoVelocity Now!](https://futuristiclab.github.io/typovelocity/) *(Update after deployment)*
 
 ## 📁 Project Structure
 
