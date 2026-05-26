@@ -102,8 +102,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // INTERACTIVE PROJECT WORLDS EVENT LISTENERS & MODALS
     // -------------------------------------------------------------
     const articles = {
-        'AI-Powered E-commerce Site on AWS': {
-            title: 'AI-Powered E-commerce Site on AWS',
+        'NEXUS OS': {
+            title: 'NEXUS OS',
+            body: `
+                <h3>AI Operating System Interface</h3><br>
+                <p>NEXUS OS is a futuristic, sci-fi themed interface demonstrating fluid menu navigation, interactive transitions, glassmorphic HUD styling, and responsive user feedback loops.</p><br>
+                <p>Key Highlights:</p>
+                <p>• Dynamic Layouts: Highly responsive HUD grids that reorganize based on active system states.</p>
+                <p>• Fluid Animations: Tailored transitions simulating high-speed data stream configurations.</p>
+                <p>• Clean Styling System: Unified CSS styling defining cybernetic visual components.</p>
+            `,
+            images: [],
+            liveLink: './Navigation-Flow-Menu/index.html',
+            githubLink: 'https://github.com/FuturisticLab/FuturisticLab',
+        },
+        'AI': {
+            title: 'AI Prompt Intelligence',
             body: `
                 <p>Deploying an AI-Powered E-commerce Site on AWS</p><br>
                 <p>Containerized Application Deployment: Hands-on experience deploying containerized applications using AWS LightSail.</p><br>
@@ -119,8 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
             liveLink: './AI-Prompt-Simulator/index.html',
             githubLink: 'https://github.com/FuturisticLab/ai-prompt-simulator',
         },
-        'On-Premises Migration to AWS': {
-            title: 'On-Premises Migration to AWS',
+        'Nexus': {
+            title: 'Nexus HVAC Simulation',
             body: `
                 <h3>Using AWS IAM to Enable Multi-Factor Authentication</h3><br>
                 <p>In this project based on a real-world scenario, I had the opportunity to use the latest cutting edge features of AWS IAM (Identity and Access Management) resources. The data related to the profiles was securely extracted, transformed and loaded into a file prepared for a script. In an automated way, groups were added, users were then added to groups, using Gitbash, AWS Cli, and shell script. In the AWS Console, MFA (Multi-factor authentication) was enabled and a group policy applied to their accounts as this strategy to have defense-in-depth is a security best practice.</p>
@@ -132,11 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
             liveLink: './Air-Conditioner-Cycle/index.html',
             githubLink: 'https://github.com/FuturisticLab/FuturisticLab',
         },
-        'Data Visualization': {
-            title: 'Data Visualization',
+        'Project Lumina': {
+            title: 'Project Lumina Immersive Web',
             body: `
                 <h3>The Transformative Power of AI in My Toolkit</h3><br>
-                <p>In this project, I enlisted an AI assistant called Gemini powered by Google which turned out to be like having a dedicated team of data analysts, developers, and project managers at my fingertips. My role was to be the architect, providing the clear, creative prompts that transformed publicly available raw data into a compelling narrative.</p><br>
+                <p>In this project, I enlisted an AI assistant called Gemini powered by Google which turned out to be like having a dedicated team of data analysts, developers, and project managers at my fingertips. My role was to be the architect, providing the clear, creative prompts that transformed publicly available raw data into a narrative.</p><br>
                 <p>Together, we created a single-page infographic. A rapidly generated data visualization generated with HTML, Tailwind CSS, and Chart.js code to make it a responsive, interactive visualization. Publicly available data was used to break down complex information making it incredibly easy to understand.</p>
             `,
             images: [
@@ -148,8 +162,24 @@ document.addEventListener('DOMContentLoaded', () => {
             liveLink: './Project-Lumina/index.html',
             githubLink: 'https://github.com/FuturisticLab/FuturisticLab',
         },
-        'Training': {
-            title: 'Training',
+        'Memory Grid': {
+            title: 'Memory Grid Workspace',
+            body: `
+                <h3>Cognitive Innovation Lab Sandbox</h3><br>
+                <p>Memory Grid is an interactive workspace design allowing drag-and-drop orchestration of custom nodes, text elements, geometric shapes, and image assets.</p><br>
+                <p>Key Highlights:</p>
+                <p>• Drag & Drop Interface: Effortless spatial arrangement of visual workspace elements on a dynamic canvas.</p>
+                <p>• Interactive Connecting Lines: Visual lines and directional arrows linking related nodes to establish relational maps.</p>
+                <p>• State Persistence: Local storage synchronization preserving the workspace state across browser sessions.</p>
+            `,
+            images: [
+                { src: 'Modal/assets/images/exchange.png', caption: 'Interactive Workspace Mapping' }
+            ],
+            liveLink: './Drag-Drop-Editors/index.html',
+            githubLink: 'https://github.com/FuturisticLab/FuturisticLab',
+        },
+        'Typovelocity': {
+            title: 'Typovelocity Speed Trainer',
             body: `
                 <h2>Network Technology Academy</h2><br>
                 <h3>CompTIA Security + Training/Certification, Certificate ID (476437364) | September 2023 - April 2024</h3><br>
@@ -179,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="modal-article">
                 <h2 class="article-title">${article.title}</h2>
                 <div class="article-body">${article.body}</div>
-                <div class="image-gallery" aria-label="Image gallery">
+                <div class="image-gallery" aria-label="Image gallery" style="display: none;">
                     <button class="nav prev" aria-label="Previous image">&#10094;</button>
                     <div class="image-wrapper">
                         <img src="" alt="" class="gallery-image" />
@@ -195,6 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         currentImageIndex = 0;
+        const galleryContainer = modalContent.querySelector('.image-gallery');
         const galleryImage = modalContent.querySelector('.gallery-image');
         const caption = modalContent.querySelector('.caption');
         const prevBtn = modalContent.querySelector('.nav.prev');
@@ -205,9 +236,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function updateImage() {
             if (article.images && article.images.length > 0) {
+                galleryContainer.style.display = 'flex';
                 galleryImage.src = article.images[currentImageIndex].src;
                 galleryImage.alt = `${article.title} - Image ${currentImageIndex + 1}`;
-                caption.textContent = article.images[currentImageIndex].caption;
+                caption.textContent = article.images[currentImageIndex].caption || '';
+                
+                if (article.images.length > 1) {
+                    prevBtn.style.display = 'block';
+                    nextBtn.style.display = 'block';
+                } else {
+                    prevBtn.style.display = 'none';
+                    nextBtn.style.display = 'none';
+                }
+            } else {
+                galleryContainer.style.display = 'none';
             }
         }
 
