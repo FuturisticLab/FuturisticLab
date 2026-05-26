@@ -96,149 +96,44 @@
     </section>
 
     <!-- Interactive Universe -->
-    <section id="universe-section" class="relative h-[800px] md:h-[1000px] overflow-hidden border-t border-b border-white/5 my-10 bg-black/10">
-        <!-- Floating Innovation Words -->
-        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-2xl left-[10%] top-[8%] animate-pulse" style="animation-duration: 3s;">Innovation</div>
-        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-xl left-[20%] top-[26%] animate-pulse" style="animation-duration: 4s;">Neural</div>
-        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-3xl left-[30%] top-[8%] animate-pulse" style="animation-duration: 5s;">Quantum</div>
-        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-xl left-[40%] top-[26%] animate-pulse" style="animation-duration: 6s;">Adaptive</div>
-        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-2xl left-[50%] top-[8%] animate-pulse" style="animation-duration: 7s;">Immersive</div>
-        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-3xl left-[60%] top-[26%] animate-pulse" style="animation-duration: 8s;">Intelligence</div>
-        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-xl left-[70%] top-[8%] animate-pulse" style="animation-duration: 9s;">Future</div>
-        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-2xl left-[80%] top-[26%] animate-pulse" style="animation-duration: 10s;">Dynamic</div>
+    <!-- Interactive Universe -->
+    <section id="universe-section" class="relative h-[800px] md:h-[1000px] overflow-hidden border-t border-b border-white/5 my-10 bg-black/10" style="perspective: 1000px; transform-style: preserve-3d;">
+        <!-- 3D Neural Network -->
+        <div id="neural-network" class="absolute inset-0 transform-style-3d pointer-events-auto"></div>
 
-        <!-- Energy Field -->
-        <div class="absolute left-1/2 top-1/2 h-[750px] w-[750px] md:h-[1200px] w-[1200px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.18),transparent_60%)] blur-3xl animate-pulse" style="animation-duration: 5s;"></div>
-        
-        <!-- Central Orb -->
-        <div class="absolute left-1/2 top-1/2 z-20 flex h-48 w-48 md:h-72 md:w-72 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 shadow-[0_0_120px_rgba(59,130,246,0.65)] animate-pulse hover:scale-105 transition duration-500 cursor-pointer">
-            <div class="absolute inset-3 md:inset-4 rounded-full border border-white/20"></div>
-            <div class="absolute inset-8 md:inset-10 rounded-full border border-white/10"></div>
+        <!-- Custom Cursor (Scoped to hover on universe-section via display logic in JS) -->
+        <div id="custom-cursor"></div>
 
-            <div class="text-center px-4 md:px-6">
-                <div class="text-[10px] md:text-sm uppercase tracking-[0.3em] text-white/70 font-mono">
-                    Neural
-                </div>
-                <div class="mt-1 md:mt-3 text-2xl md:text-4xl font-black font-header tracking-wider">
-                     Creative Intelligence Engine
-                </div>
-                <div class="mt-1 md:mt-2 text-white/70 text-[9px] md:text-sm leading-relaxed hidden md:block">
-                    Jason Marcus 
-                </div>
-            </div>
+        <!-- Info Panel (Scoped inside section) -->
+        <div id="info-panel" class="absolute top-[30px] left-[30px] z-30 max-w-[300px] p-5 rounded-[15px] border border-[#00d4ff33] bg-[#001428e6] backdrop-blur-[20px] text-xs text-white shadow-[0_0_30px_rgba(0,212,255,0.2)] transition-transform duration-500 translate-x-[-400px]">
+            <h3 class="text-[#00d4ff] font-bold text-sm tracking-wider mb-2.5" style="text-shadow: 0 0 10px rgba(0,212,255,0.5);">🌌 Quantum Space Portfolio</h3>
+            <img src="Modal/assets/images/Untitled.png" class="w-[60px] h-[80px] object-cover mb-3 block" alt="Photo">
+            <p class="leading-relaxed">Navigate through an interconnected cosmos of quantum projects. Each node pulses with LED energy, connected by data streams flowing through spacetime.</p>
+            <br>
+            <p class="leading-relaxed"><strong>🚀 Navigation:</strong></p>
+            <p class="leading-relaxed">• Mouse: Control 3D space drift</p>
+            <p class="leading-relaxed">• Click nodes: Access project data</p>
+            <p class="leading-relaxed">• Auto-rotate: Orbital view mode</p>
+            <p class="leading-relaxed">• Space: Toggle rotation</p>
+            <br>
+            <p class="leading-relaxed"><strong>⚡ System:</strong> Quantum Neural Network</p>
         </div>
 
-        <!-- Rotating Data Rings -->
-        <div class="absolute left-1/2 top-1/2 h-[680px] w-[680px] md:h-[900px] md:w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-400/10 animate-spin" style="animation-duration: 60s;"></div>
+        <!-- Stats Display (Scoped inside section) -->
+        <div class="absolute top-[30px] right-[30px] z-30 flex flex-col gap-2 font-mono text-xs text-white/80 p-4 border border-[#00d4ff1a] bg-black/40 backdrop-blur-md rounded-xl">
+            <div>🔷 ACTIVE NODES: <span id="node-count" class="text-cyan-300 font-bold">0</span></div>
+            <div>⚡ DATA STREAMS: <span id="connection-count" class="text-cyan-300 font-bold">0</span></div>
+            <div>🌌 QUANTUM STATUS: <span style="color: #00d4ff; text-shadow: 0 0 5px #00d4ff;">ONLINE</span></div>
+            <div>🚀 DIMENSION: <span style="color: #00ccff;">SPACE-3D</span></div>
+        </div>
 
-        <div class="absolute left-1/2 top-1/2 h-[580px] w-[580px] md:h-[760px] md:w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-purple-500/10 animate-spin" style="animation-duration: 40s; animation-direction: reverse;"></div>
-
-        <!-- Orbit Rings -->
-        <div class="absolute left-1/2 top-1/2 h-[530px] w-[530px] md:h-[700px] md:w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-400/10"></div>
-        <div class="absolute left-1/2 top-1/2 h-[380px] w-[380px] md:h-[520px] md:w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-purple-400/10"></div>
-
-        <!-- Project Worlds -->
-        
-        <!-- 1. NEXUS OS (Navigation Flow Menu) -->
-        <a href="./Navigation-Flow-Menu/index.html" data-project="NEXUS OS" class="project-world absolute top-[12%] md:top-[18%] left-[28%] md:left-[42%] w-40 h-40 md:w-56 md:h-56 group z-10 block">
-            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-cyan-400 to-blue-600 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
-            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 md:p-6 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
-                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-cyan-300 animate-pulse"></div>
-                <div class="text-lg md:text-2xl font-bold font-header text-white">NEXUS OS</div>
-                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">AI Operating System</div>
-                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
-                    <span>Explore</span>
-                    <span>↗</span>
-                </div>
-            </div>
-        </a>
-
-        <!-- 2. Quantum Net (Air Conditioner Cycle) -->
-        <a href="./Air-Conditioner-Cycle/index.html" data-project="Nexus" class="project-world absolute bottom-[14%] md:bottom-[18%] right-[8%] md:right-[14%] w-32 h-32 md:w-40 md:h-40 group z-10 block">
-            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-purple-500 to-pink-500 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
-            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
-                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-pink-400 animate-pulse"></div>
-                <div class="text-base md:text-xl font-bold font-header text-white">Nexus</div>
-                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">HVAC Simulation</div>
-                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
-                    <span>Explore</span>
-                    <span>↗</span>
-                </div>
-            </div>
-        </a>
-
-        <!-- 3. Echo AI (AI Prompt Simulator) -->
-        <a href="./AI-Prompt-Simulator/index.html" data-project="AI" class="project-world absolute top-[10%] md:top-[15%] right-[10%] md:right-[18%] w-36 h-36 md:w-44 md:h-44 group z-10 block">
-            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-blue-400 to-violet-500 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
-            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
-                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-violet-400 animate-pulse"></div>
-                <div class="text-base md:text-xl font-bold font-header text-white">AI</div>
-                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">Prompt Intelligence</div>
-                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
-                    <span>Explore</span>
-                    <span>↗</span>
-                </div>
-            </div>
-        </a>
-
-        <!-- 4. Void Runner (Project-Lumina) -->
-        <a href="./Project-Lumina/index.html" data-project="Project Lumina" class="project-world absolute bottom-[10%] md:bottom-[15%] left-[8%] md:left-[16%] w-36 h-36 md:w-48 md:h-48 group z-10 block">
-            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-pink-500 to-red-500 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
-            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
-                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-red-400 animate-pulse"></div>
-                <div class="text-base md:text-xl font-bold font-header text-white">Project Lumina</div>
-                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">Immersive Web Experience</div>
-                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
-                    <span>Explore</span>
-                    <span>↗</span>
-                </div>
-            </div>
-        </a>
-
-         <!-- 5. Memory Grid (Drag-Drop Editors) -->
-        <a href="./Drag-Drop-Editors/index.html" data-project="Memory Grid" class="project-world absolute bottom-[26%] md:bottom-[30%] left-[28%] md:left-[40%] w-32 h-32 md:w-36 md:h-36 group z-10 block">
-            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-emerald-400 to-cyan-400 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
-            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
-                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-emerald-300 animate-pulse"></div>
-                <div class="text-base md:text-lg font-bold font-header text-white">Memory Grid</div>
-                <div class="mt-1 md:mt-2 text-[9px] md:text-xs text-white/60 leading-relaxed font-mono">Cognitive Innovation Lab</div>
-                <div class="mt-3 md:mt-5 flex items-center justify-between text-[8px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
-                    <span>Explore</span>
-                    <span>↗</span>
-                </div>
-            </div>
-        </a>
-
-        <!-- 6. Typovelocity (Neural Keyboard Simulator) -->
-        <a href="./Typovelocity/index.html" data-project="Typovelocity" class="project-world absolute top-[35%] left-[12%] w-36 h-36 md:w-44 md:h-44 group z-10 block">
-            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-amber-400 to-orange-500 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
-            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
-                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-amber-400 animate-pulse"></div>
-                <div class="text-base md:text-xl font-bold font-header text-white">Typovelocity</div>
-                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">Neural Keyboard Simulator</div>
-                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
-                    <span>Explore</span>
-                    <span>↗</span>
-                </div>
-            </div>
-        </a>
-
-        <!-- Neural Connections -->
-        <svg class="absolute inset-0 h-full w-full opacity-40 z-0 pointer-events-none">
-            <line x1="50%" y1="50%" x2="42%" y2="28%" stroke="url(#grad1)" strokeWidth="2" />
-            <line x1="50%" y1="50%" x2="86%" y2="82%" stroke="url(#grad1)" strokeWidth="2" />
-            <line x1="50%" y1="50%" x2="82%" y2="25%" stroke="url(#grad1)" strokeWidth="2" />
-            <line x1="50%" y1="50%" x2="24%" y2="85%" stroke="url(#grad1)" strokeWidth="2" />
-            <line x1="50%" y1="50%" x2="40%" y2="70%" stroke="url(#grad1)" strokeWidth="2" />
-            <line x1="50%" y1="50%" x2="12%" y2="35%" stroke="url(#grad1)" strokeWidth="2" />
-
-            <defs>
-                <linearGradient id="grad1">
-                    <stop offset="0%" stop-color="#22d3ee" />
-                    <stop offset="100%" stop-color="#a855f7" />
-                </linearGradient>
-            </defs>
-        </svg>
+        <!-- Controls (Scoped inside section) -->
+        <div id="controls" class="absolute bottom-[30px] left-1/2 -translate-x-1/2 z-30 flex gap-4">
+            <button class="control-btn" onclick="toggleRotation()">Auto-Rotate</button>
+            <button class="control-btn" onclick="toggleInfo()">Info</button>
+            <button class="control-btn" onclick="randomizeNetwork()">Randomize</button>
+            <button class="control-btn" onclick="resetView()">Reset View</button>
+        </div>
     </section>
 
     <!-- Bottom Panels -->

@@ -101,6 +101,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------
     // INTERACTIVE PROJECT WORLDS EVENT LISTENERS & MODALS
     // -------------------------------------------------------------
+    // -------------------------------------------------------------
+    // 3D NEURAL NETWORK / INTERACTIVE COSMOS
+    // -------------------------------------------------------------
+    const projects = [
+        { title: 'AI', color: '#00d4ff' },
+        { title: 'Nexus', color: '#0099ff' },
+        { title: 'Project Lumina', color: '#00ccff' },
+        { title: 'Typovelocity', color: '#0066ff' },
+        { title: 'Memory Grid', color: '#00b3ff' },
+        { title: 'NEXUS OS', color: '#0080ff' },
+        { title: 'VR Experience', color: '#004dff' },
+        { title: 'IoT Dashboard', color: '#00b3ff' },
+        { title: 'Neural Compiler', color: '#0080ff' },
+        { title: 'Coming Soon', color: '#004dff' }
+    ];
+
     const articles = {
         'NEXUS OS': {
             title: 'NEXUS OS',
@@ -193,20 +209,281 @@ document.addEventListener('DOMContentLoaded', () => {
             ],
             liveLink: './Typovelocity/index.html',
             githubLink: 'https://github.com/FuturisticLab/FuturisticLab',
+        },
+        'VR Experience': {
+            title: 'VR Experience Demo',
+            body: `
+                <h3>Immersive Spatial Interface</h3><br>
+                <p>A WebXR virtual reality experiment designed to test spatial navigation models. Users interact with neural data components in a fully immersive 3D grid with visual telemetry feedback.</p><br>
+                <p>Key Highlights:</p>
+                <p>• WebXR Integration: Fully browser-compatible immersive spatial graphics.</p>
+                <p>• Interactive Physics: Dynamic collision fields and spatialized audio simulation.</p>
+            `,
+            images: [],
+            liveLink: '#',
+            githubLink: '#',
+        },
+        'IoT Dashboard': {
+            title: 'IoT Telemetry Dashboard',
+            body: `
+                <h3>Quantum IoT Device Monitoring</h3><br>
+                <p>Real-time distributed hardware tracker utilizing WebSocket data streams. It displays state-of-health diagnostics for edge computing devices and automates threshold alerts.</p><br>
+                <p>Key Highlights:</p>
+                <p>• Real-Time Streams: Continuous telemetry monitoring with sub-millisecond updates.</p>
+                <p>• Advanced Charting: Visual latency, throughput, and error metrics plotted in real-time.</p>
+            `,
+            images: [],
+            liveLink: '#',
+            githubLink: '#',
+        },
+        'Neural Compiler': {
+            title: 'Neural Compiler Core',
+            body: `
+                <h3>AI-Driven Code Optimization Engine</h3><br>
+                <p>An experimental compiler pipeline utilizing machine learning models to detect performance bottlenecks in JavaScript runtimes and generate optimized instructions.</p><br>
+                <p>Key Highlights:</p>
+                <p>• Graph Representation: Translates ASTs into neural network structures for pattern analysis.</p>
+                <p>• Semantic Profiling: Predicts CPU cycles and memory usage before code execution.</p>
+            `,
+            images: [],
+            liveLink: '#',
+            githubLink: '#',
+        },
+        'Coming Soon': {
+            title: 'Quantum Project Core',
+            body: `
+                <h3>Future Repository Node</h3><br>
+                <p>A placeholder for our next repository sync. The neural network will auto-populate this node with live commits and build status as soon as the project is initialized.</p>
+            `,
+            images: [],
+            liveLink: '#',
+            githubLink: '#',
         }
     };
 
+    const network = document.getElementById('neural-network');
     const modal = document.getElementById('project-modal');
     const modalContent = modal ? modal.querySelector('.modal-content') : null;
-    let currentImageIndex = 0;
+    const universeSection = document.getElementById('universe-section');
+    const customCursor = document.getElementById('custom-cursor');
+    const infoPanel = document.getElementById('info-panel');
 
+    let nodes = [];
+    let connections = [];
+    let isRotating = true; // Auto-rotate active by default
+    let mouseX = 0;
+    let mouseY = 0;
+    let currentImageIndex = 0;
+    let mouseActive = false;
+
+    // Initialize 3D Network
+    function initializeNetwork() {
+        if (!network || !universeSection) return;
+
+        // Reset the rotation transform so client rect calculations are correct
+        const originalTransform = network.style.transform;
+        network.style.transform = '';
+        
+        network.innerHTML = '';
+        nodes = [];
+        connections = [];
+
+        projects.forEach((project, index) => {
+            createProjectNode(project, index);
+        });
+        createConnections();
+        createParticles();
+        createSpaceEffects();
+        updateStats();
+
+        network.style.transform = originalTransform;
+    }
+
+    function createProjectNode(project, index) {
+        const node = document.createElement('div');
+        node.className = 'project-node';
+        node.innerHTML = `<div class="project-title">${project.title}</div>`;
+
+        // Fibonacci sphere distribution for positioning in 3D
+        const phi = Math.acos(1 - (2 * (index + 1)) / projects.length);
+        const theta = Math.PI * (1 + Math.sqrt(5)) * (index + 1);
+
+        const radius = Math.min(280, universeSection.offsetWidth * 0.32); // responsive radius
+        const x = radius * Math.sin(phi) * Math.cos(theta);
+        const y = radius * Math.sin(phi) * Math.sin(theta) * 0.8; // slightly squashed vertically
+        const z = radius * Math.cos(phi);
+        
+        node.style.left = `calc(50% + ${x}px)`;
+        node.style.top = `calc(50% + ${y}px)`;
+        node.style.transform = `translateZ(${z}px)`;
+
+        // Click opens modal
+        node.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playClickSound();
+            openModal(project.title);
+        });
+        
+        node.addEventListener('mouseenter', () => {
+            playHoverSound();
+        });
+
+        network.appendChild(node);
+        nodes.push({ element: node, project, x, y, z });
+    }
+
+    function createConnections() {
+        if (!network || nodes.length === 0) return;
+        const containerRect = network.getBoundingClientRect();
+        
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const distance = Math.sqrt(
+                    Math.pow(nodes[i].x - nodes[j].x, 2) +
+                    Math.pow(nodes[i].y - nodes[j].y, 2) +
+                    Math.pow(nodes[i].z - nodes[j].z, 2)
+                );
+                // Connect if within distance
+                if (distance < 450 && Math.random() > 0.45) {
+                    createConnection(nodes[i], nodes[j], containerRect);
+                }
+            }
+        }
+    }
+
+    function createConnection(nodeA, nodeB, containerRect) {
+        const line = document.createElement('div');
+        line.className = 'connection-line';
+
+        const rect1 = nodeA.element.getBoundingClientRect();
+        const rect2 = nodeB.element.getBoundingClientRect();
+
+        const x1 = rect1.left + rect1.width / 2 - containerRect.left;
+        const y1 = rect1.top + rect1.height / 2 - containerRect.top;
+        const x2 = rect2.left + rect2.width / 2 - containerRect.left;
+        const y2 = rect2.top + rect2.height / 2 - containerRect.top;
+
+        const distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        const angle = (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI;
+
+        line.style.width = `${distance}px`;
+        line.style.left = `${x1}px`;
+        line.style.top = `${y1}px`;
+        line.style.transform = `rotate(${angle}deg)`;
+        line.style.transformOrigin = '0 50%';
+
+        network.appendChild(line);
+        connections.push(line);
+    }
+
+    function createParticles() {
+        if (!universeSection) return;
+        
+        // Remove existing particles to prevent accumulation
+        const existingParticles = universeSection.querySelectorAll('.particle, .quantum-particle');
+        existingParticles.forEach(p => p.remove());
+        
+        const width = universeSection.offsetWidth;
+        const height = universeSection.offsetHeight;
+        
+        for (let i = 0; i < 20; i++) {
+            setTimeout(() => {
+                if (!universeSection) return;
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * width + 'px';
+                particle.style.top = height + 10 + 'px';
+                
+                particle.style.setProperty('--float-distance', `-${height + 80}px`);
+                particle.style.setProperty('--float-x', `${(Math.random() - 0.5) * 300}px`);
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = Math.random() * 6 + 8 + 's';
+
+                universeSection.appendChild(particle);
+            }, i * 400);
+        }
+        for (let i = 0; i < 15; i++) {
+            setTimeout(() => {
+                if (!universeSection) return;
+                const qParticle = document.createElement('div');
+                qParticle.className = 'quantum-particle';
+                qParticle.style.left = Math.random() * width + 'px';
+                qParticle.style.top = Math.random() * height + 'px';
+                
+                qParticle.style.setProperty('--drift-x', `${(Math.random() - 0.5) * 400}px`);
+                qParticle.style.setProperty('--drift-y', `${(Math.random() - 0.5) * 400}px`);
+                qParticle.style.animationDelay = Math.random() * 12 + 's';
+                qParticle.style.animationDuration = Math.random() * 8 + 12 + 's';
+
+                universeSection.appendChild(qParticle);
+            }, i * 500);
+        }
+    }
+
+    function spawnSingleParticle() {
+        if (!universeSection) return;
+        const width = universeSection.offsetWidth;
+        const height = universeSection.offsetHeight;
+        
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * width + 'px';
+        particle.style.top = height + 10 + 'px';
+        
+        particle.style.setProperty('--float-distance', `-${height + 80}px`);
+        particle.style.setProperty('--float-x', `${(Math.random() - 0.5) * 300}px`);
+        particle.style.animationDuration = Math.random() * 6 + 8 + 's';
+
+        universeSection.appendChild(particle);
+
+        setTimeout(() => {
+            particle.remove();
+        }, 14000);
+    }
+
+    function createSpaceEffects() {
+        if (!universeSection) return;
+        
+        // Remove existing effects
+        const existingEffects = universeSection.querySelectorAll('.nebula-effect, .wormhole');
+        existingEffects.forEach(e => e.remove());
+        
+        const width = universeSection.offsetWidth;
+        const height = universeSection.offsetHeight;
+
+        for (let i = 0; i < 3; i++) {
+            const nebula = document.createElement('div');
+            nebula.className = 'nebula-effect';
+            nebula.style.left = Math.random() * width + 'px';
+            nebula.style.top = Math.random() * height + 'px';
+            nebula.style.animationDelay = Math.random() * 20 + 's';
+            universeSection.appendChild(nebula);
+        }
+        for (let i = 0; i < 2; i++) {
+            const wormhole = document.createElement('div');
+            wormhole.className = 'wormhole';
+            wormhole.style.left = Math.random() * width + 'px';
+            wormhole.style.top = Math.random() * height + 'px';
+            wormhole.style.animationDelay = Math.random() * 8 + 's';
+            universeSection.appendChild(wormhole);
+        }
+    }
+
+    function updateStats() {
+        const nodeCountEl = document.getElementById('node-count');
+        const connectionCountEl = document.getElementById('connection-count');
+        if (nodeCountEl) nodeCountEl.textContent = nodes.length;
+        if (connectionCountEl) connectionCountEl.textContent = connections.length;
+    }
+
+    // Modal Content Loading & Control
     function loadArticle(projectTitle) {
         const article = articles[projectTitle];
         if (!article || !modalContent) return;
 
         modalContent.innerHTML = `
             <span class="close-modal" role="button" aria-label="Close modal">&times;</span>
-            <div class="modal-article">
+            <div class="modal-article" tabindex="-1">
                 <h2 class="article-title">${article.title}</h2>
                 <div class="article-body">${article.body}</div>
                 <div class="image-gallery" aria-label="Image gallery" style="display: none;">
@@ -233,6 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const closeBtn = modalContent.querySelector('.close-modal');
         const liveBtn = modalContent.querySelector('.live-btn');
         const githubBtn = modalContent.querySelector('.github-btn');
+        const articleContainer = modalContent.querySelector('.modal-article');
 
         function updateImage() {
             if (article.images && article.images.length > 0) {
@@ -267,7 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateImage();
         });
 
-        closeBtn.addEventListener('click', closeModal);
+        closeBtn.addEventListener('click', window.closeModal);
         
         liveBtn.addEventListener('click', () => {
             playClickSound();
@@ -279,7 +557,17 @@ document.addEventListener('DOMContentLoaded', () => {
             window.open(article.githubLink || '#', '_blank');
         });
 
-        modalContent.focus();
+        // Set focus to the container to handle keydowns
+        articleContainer.focus();
+        articleContainer.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                if (article.images && article.images.length > 1) prevBtn.click();
+            } else if (e.key === 'ArrowRight') {
+                if (article.images && article.images.length > 1) nextBtn.click();
+            } else if (e.key === 'Escape') {
+                window.closeModal();
+            }
+        });
     }
 
     function openModal(projectTitle) {
@@ -290,61 +578,207 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function closeModal() {
+    // Attach control handlers to window for inline onclick attributes in HTML
+    window.toggleRotation = function() {
+        playClickSound();
+        isRotating = !isRotating;
+    };
+    
+    window.toggleInfo = function() {
+        playClickSound();
+        if (infoPanel) {
+            infoPanel.classList.toggle('active');
+        }
+    };
+    
+    window.randomizeNetwork = function() {
+        playClickSound();
+        if (!universeSection || !network) return;
+        
+        connections.forEach(line => line.remove());
+        connections = [];
+        
+        const width = universeSection.offsetWidth;
+        const height = universeSection.offsetHeight;
+        
+        const originalTransform = network.style.transform;
+        network.style.transform = '';
+
+        nodes.forEach((node) => {
+            const randomX = (Math.random() - 0.5) * Math.min(500, width * 0.65);
+            const randomY = (Math.random() - 0.5) * Math.min(500, height * 0.65) * 0.8;
+            const randomZ = (Math.random() - 0.5) * 350;
+
+            node.x = randomX;
+            node.y = randomY;
+            node.z = randomZ;
+
+            node.element.style.left = `calc(50% + ${randomX}px)`;
+            node.element.style.top = `calc(50% + ${randomY}px)`;
+            node.element.style.transform = `translateZ(${randomZ}px)`;
+        });
+        
+        createConnections();
+        network.style.transform = originalTransform;
+        updateStats();
+    };
+    
+    window.resetView = function() {
+        playClickSound();
+        if (network) {
+            network.style.transform = '';
+            initializeNetwork();
+        }
+    };
+    
+    window.closeModal = function() {
         if (modal) {
             playClickSound();
             modal.style.display = 'none';
             document.body.style.overflow = '';
         }
-    }
+    };
 
-    // Modal click events & close handlers
+    // Close modal on outside click
     if (modal) {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
-                closeModal();
+                window.closeModal();
             }
         });
     }
 
+    // Keyboard Shortcuts listener
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeModal();
+        if (modal && modal.style.display === 'flex') {
+            if (e.key === 'Escape') {
+                window.closeModal();
+            }
+            return;
+        }
+        
+        if (mouseActive) {
+            switch (e.key) {
+                case ' ':
+                    e.preventDefault();
+                    window.toggleRotation();
+                    break;
+                case 'i':
+                    window.toggleInfo();
+                    break;
+                case 'r':
+                    window.randomizeNetwork();
+                    break;
+            }
         }
     });
 
-    const projectWorlds = document.querySelectorAll('.project-world');
-    projectWorlds.forEach(world => {
-        world.addEventListener('mouseenter', () => {
-            playHoverSound();
+    // Custom Cursor styling init
+    if (customCursor) {
+        customCursor.style.opacity = '0';
+        customCursor.style.transition = 'opacity 0.3s ease, transform 0.1s ease';
+    }
+
+    // Mouse events bound specifically to universeSection
+    if (universeSection && network) {
+        universeSection.style.cursor = 'none';
+        
+        universeSection.addEventListener('mouseenter', () => {
+            if (customCursor) customCursor.style.opacity = '1';
+            mouseActive = true;
         });
-        world.addEventListener('click', (e) => {
-            const projectKey = world.getAttribute('data-project');
-            if (projectKey) {
-                e.preventDefault(); // Prevent standard navigation
-                playClickSound();
-                openModal(projectKey); // Open modal instead
-            } else {
-                playClickSound();
+
+        universeSection.addEventListener('mouseleave', () => {
+            if (customCursor) customCursor.style.opacity = '0';
+            mouseActive = false;
+            if (!isRotating) {
+                network.style.transform = 'rotateY(0deg) rotateX(0deg)';
             }
         });
+
+        universeSection.addEventListener('mousemove', (e) => {
+            const rect = universeSection.getBoundingClientRect();
+            
+            if (customCursor) {
+                customCursor.style.left = e.clientX - 12 + 'px';
+                customCursor.style.top = e.clientY - 12 + 'px';
+            }
+
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            mouseX = (x / rect.width) * 2 - 1;
+            mouseY = (y / rect.height) * 2 - 1;
+
+            if (!isRotating) {
+                network.style.transform = `rotateY(${mouseX * 20}deg) rotateX(${-mouseY * 12}deg)`;
+            }
+        });
+    }
+
+    // Window Resize redraw listener
+    window.addEventListener('resize', () => {
+        if (network && nodes.length > 0) {
+            connections.forEach(line => line.remove());
+            connections = [];
+            const originalTransform = network.style.transform;
+            network.style.transform = '';
+            createConnections();
+            network.style.transform = originalTransform;
+            updateStats();
+        }
     });
+
+    // Render loop
+    let rotationAngle = 0;
+    function animate() {
+        if (isRotating && network) {
+            rotationAngle += 0.25; // Smooth slow rotation
+            network.style.transform = `rotateY(${rotationAngle}deg) rotateX(${Math.sin(Date.now() * 0.001) * 3}deg)`;
+        }
+
+        if (Math.random() < 0.03 && universeSection) {
+            const currentParticles = universeSection.querySelectorAll('.particle').length;
+            if (currentParticles < 25) {
+                spawnSingleParticle();
+            }
+        }
+
+        if (customCursor && mouseActive) {
+            customCursor.style.boxShadow = `
+                0 0 ${10 + Math.sin(Date.now() * 0.01) * 5}px rgba(0, 212, 255, 0.5),
+                inset 0 0 5px rgba(0, 212, 255, 0.2)
+            `;
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    // Initialize network nodes, connections and start animation
+    initializeNetwork();
+    animate();
+
+    // Auto-slide-in Info Panel after 1s, hide after 5s
+    setTimeout(() => {
+        if (infoPanel) {
+            infoPanel.classList.add('active');
+            setTimeout(() => {
+                infoPanel.classList.remove('active');
+            }, 6000);
+        }
+    }, 1000);
 
     // -------------------------------------------------------------
     // DYNAMIC EVENT FEED TIME TICKER
     // -------------------------------------------------------------
-    // Periodically update feed timestamps so it feels "living"
     const feedTimes = document.querySelectorAll('.stream-time');
     
     function updateTimestamps() {
         feedTimes.forEach((el, index) => {
-            // Get base offset from data or index
             let baseSeconds = parseInt(el.getAttribute('data-seconds') || (15 + index * 60));
-            // Add a small randomized increment
             baseSeconds += Math.round(Math.random() * 2);
             el.setAttribute('data-seconds', baseSeconds);
 
-            // Format text
             if (baseSeconds < 60) {
                 el.textContent = `${baseSeconds} seconds ago`;
             } else if (baseSeconds < 3600) {
@@ -357,6 +791,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Run ticker updates
     setInterval(updateTimestamps, 3000);
 });
