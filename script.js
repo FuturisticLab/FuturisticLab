@@ -322,7 +322,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const phi = Math.acos(1 - (2 * (index + 1)) / projects.length);
         const theta = Math.PI * (1 + Math.sqrt(5)) * (index + 1);
 
-        const radius = Math.min(280, universeSection.offsetWidth * 0.32); // responsive radius
+        // Use offsetWidth if available, otherwise fallback to viewport width to prevent radius = 0 during early execution
+        const referenceWidth = universeSection.offsetWidth || window.innerWidth || 800;
+        const radius = Math.min(280, referenceWidth * 0.32); // responsive radius
         const x = radius * Math.sin(phi) * Math.cos(theta);
         const y = radius * Math.sin(phi) * Math.sin(theta) * 0.8; // slightly squashed vertically
         const z = radius * Math.cos(phi);
@@ -401,8 +403,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const existingParticles = universeSection.querySelectorAll('.particle, .quantum-particle');
         existingParticles.forEach(p => p.remove());
         
-        const width = universeSection.offsetWidth;
-        const height = universeSection.offsetHeight;
+        const width = universeSection.offsetWidth || window.innerWidth || 1200;
+        const height = universeSection.offsetHeight || 800;
         
         for (let i = 0; i < 20; i++) {
             setTimeout(() => {
@@ -440,8 +442,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function spawnSingleParticle() {
         if (!universeSection) return;
-        const width = universeSection.offsetWidth;
-        const height = universeSection.offsetHeight;
+        const width = universeSection.offsetWidth || window.innerWidth || 1200;
+        const height = universeSection.offsetHeight || 800;
         
         const particle = document.createElement('div');
         particle.className = 'particle';
@@ -466,8 +468,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const existingEffects = universeSection.querySelectorAll('.nebula-effect, .wormhole');
         existingEffects.forEach(e => e.remove());
         
-        const width = universeSection.offsetWidth;
-        const height = universeSection.offsetHeight;
+        const width = universeSection.offsetWidth || window.innerWidth || 1200;
+        const height = universeSection.offsetHeight || 800;
 
         for (let i = 0; i < 3; i++) {
             const nebula = document.createElement('div');
@@ -747,16 +749,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Window Resize redraw listener
+    // Window Resize listener - rebuild network to fit new container dimensions
     window.addEventListener('resize', () => {
         if (network && nodes.length > 0) {
-            connections.forEach(line => line.remove());
-            connections = [];
-            const originalTransform = network.style.transform;
-            network.style.transform = '';
-            createConnections();
-            network.style.transform = originalTransform;
-            updateStats();
+            initializeNetwork();
         }
     });
 
@@ -788,6 +784,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize network nodes, connections and start animation
     initializeNetwork();
     animate();
+
+    // Trigger full initialization on window load to ensure all layouts and dimensions are fully computed
+    window.addEventListener('load', () => {
+        initializeNetwork();
+    });
 
     // Auto-slide-in Info Panel after 1s, hide after 5s
     setTimeout(() => {
