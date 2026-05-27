@@ -96,44 +96,369 @@
     </section>
 
     <!-- Interactive Universe -->
-    <!-- Interactive Universe -->
-    <section id="universe-section" class="relative h-[800px] md:h-[1000px] overflow-hidden border-t border-b border-white/5 my-10 bg-black/10" style="perspective: 1000px; transform-style: preserve-3d;">
-        <!-- 3D Neural Network -->
-        <div id="neural-network" class="absolute inset-0 transform-style-3d pointer-events-auto"></div>
+    <section id="universe-section" class="relative h-[800px] md:h-[1000px] overflow-hidden border-t border-b border-white/5 my-10 bg-black/10">
+        <!-- Floating Innovation Words -->
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-2xl left-[10%] top-[8%] animate-pulse" style="animation-duration: 3s;">Innovation</div>
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-xl left-[20%] top-[26%] animate-pulse" style="animation-duration: 4s;">Neural</div>
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-3xl left-[30%] top-[8%] animate-pulse" style="animation-duration: 5s;">Quantum</div>
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-xl left-[40%] top-[26%] animate-pulse" style="animation-duration: 6s;">Adaptive</div>
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-2xl left-[50%] top-[8%] animate-pulse" style="animation-duration: 7s;">Immersive</div>
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-3xl left-[60%] top-[26%] animate-pulse" style="animation-duration: 8s;">Intelligence</div>
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-xl left-[70%] top-[8%] animate-pulse" style="animation-duration: 9s;">Future</div>
+        <div class="absolute z-0 text-white/5 font-black uppercase tracking-[0.4em] select-none text-2xl left-[80%] top-[26%] animate-pulse" style="animation-duration: 10s;">Dynamic</div>
+
+        <!-- Energy Field -->
+        <div class="absolute left-1/2 top-1/2 h-[750px] w-[750px] md:h-[1200px] w-[1200px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.18),transparent_60%)] blur-3xl animate-pulse" style="animation-duration: 5s;"></div>
+        
+        <!-- Central Orb -->
+        <div class="absolute left-1/2 top-1/2 z-20 flex h-48 w-48 md:h-72 md:w-72 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 shadow-[0_0_120px_rgba(59,130,246,0.65)] animate-pulse hover:scale-105 transition duration-500 cursor-pointer">
+            <div class="absolute inset-3 md:inset-4 rounded-full border border-white/20"></div>
+            <div class="absolute inset-8 md:inset-10 rounded-full border border-white/10"></div>
+
+            <div class="text-center px-4 md:px-6">
+                <div class="text-[10px] md:text-sm uppercase tracking-[0.3em] text-white/70 font-mono">
+                    Neural
+                </div>
+                <div class="mt-1 md:mt-3 text-2xl md:text-4xl font-black font-header tracking-wider">
+                     Creative Intelligence Engine
+                </div>
+                <div class="mt-1 md:mt-2 text-white/70 text-[9px] md:text-sm leading-relaxed hidden md:block">
+                    Jason Marcus 
+                </div>
+            </div>
+        </div>
+
+        <!-- Rotating Data Rings -->
+        <div class="absolute left-1/2 top-1/2 h-[680px] w-[680px] md:h-[900px] md:w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-400/10 animate-spin" style="animation-duration: 60s;"></div>
+
+        <div class="absolute left-1/2 top-1/2 h-[580px] w-[580px] md:h-[760px] md:w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-purple-500/10 animate-spin" style="animation-duration: 40s; animation-direction: reverse;"></div>
+
+        <!-- Orbit Rings -->
+        <div class="absolute left-1/2 top-1/2 h-[530px] w-[530px] md:h-[700px] md:w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-400/10"></div>
+        <div class="absolute left-1/2 top-1/2 h-[380px] w-[380px] md:h-[520px] md:w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-purple-400/10"></div>
 
         <!-- Custom Cursor (Scoped to hover on universe-section via display logic in JS) -->
         <div id="custom-cursor"></div>
 
-        <!-- Info Panel (Scoped inside section) -->
-        <div id="info-panel" class="absolute top-[30px] left-[30px] z-30 max-w-[300px] p-5 rounded-[15px] border border-[#00d4ff33] bg-[#001428e6] backdrop-blur-[20px] text-xs text-white shadow-[0_0_30px_rgba(0,212,255,0.2)] transition-transform duration-500 translate-x-[-400px]">
-            <h3 class="text-[#00d4ff] font-bold text-sm tracking-wider mb-2.5" style="text-shadow: 0 0 10px rgba(0,212,255,0.5);">🌌 Quantum Space Portfolio</h3>
-            <img src="Modal/assets/images/Untitled.png" class="w-[60px] h-[80px] object-cover mb-3 block" alt="Photo">
-            <p class="leading-relaxed">Navigate through an interconnected cosmos of quantum projects. Each node pulses with LED energy, connected by data streams flowing through spacetime.</p>
-            <br>
-            <p class="leading-relaxed"><strong>🚀 Navigation:</strong></p>
-            <p class="leading-relaxed">• Mouse: Control 3D space drift</p>
-            <p class="leading-relaxed">• Click nodes: Access project data</p>
-            <p class="leading-relaxed">• Auto-rotate: Orbital view mode</p>
-            <p class="leading-relaxed">• Space: Toggle rotation</p>
-            <br>
-            <p class="leading-relaxed"><strong>⚡ System:</strong> Quantum Neural Network</p>
-        </div>
+        <!-- Project Worlds -->
+        
+        <!-- 1. NEXUS OS (Navigation Flow Menu) -->
+        <a href="./Navigation-Flow-Menu/index.html" data-project="NEXUS OS" class="project-world absolute top-[12%] left-[42%] w-32 h-32 md:w-48 md:h-48 group z-10 block">
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-cyan-400 to-blue-600 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 md:p-6 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
+                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-cyan-300 animate-pulse"></div>
+                <div class="text-base md:text-xl font-bold font-header text-white">NEXUS OS</div>
+                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">AI Operating System</div>
+                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
+                    <span>Explore</span>
+                    <span>↗</span>
+                </div>
+            </div>
+        </a>
 
-        <!-- Stats Display (Scoped inside section) -->
-        <div class="absolute top-[30px] right-[30px] z-30 flex flex-col gap-2 font-mono text-xs text-white/80 p-4 border border-[#00d4ff1a] bg-black/40 backdrop-blur-md rounded-xl">
-            <div>🔷 ACTIVE NODES: <span id="node-count" class="text-cyan-300 font-bold">0</span></div>
-            <div>⚡ DATA STREAMS: <span id="connection-count" class="text-cyan-300 font-bold">0</span></div>
-            <div>🌌 QUANTUM STATUS: <span style="color: #00d4ff; text-shadow: 0 0 5px #00d4ff;">ONLINE</span></div>
-            <div>🚀 DIMENSION: <span style="color: #00ccff;">SPACE-3D</span></div>
-        </div>
+        <!-- 2. Nexus (Air Conditioner Cycle) -->
+        <a href="./Air-Conditioner-Cycle/index.html" data-project="Nexus" class="project-world absolute bottom-[14%] right-[8%] w-28 h-28 md:w-36 md:h-36 group z-10 block">
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-purple-500 to-pink-500 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
+                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-pink-400 animate-pulse"></div>
+                <div class="text-base md:text-xl font-bold font-header text-white">Nexus</div>
+                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">HVAC Simulation</div>
+                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
+                    <span>Explore</span>
+                    <span>↗</span>
+                </div>
+            </div>
+        </a>
 
-        <!-- Controls (Scoped inside section) -->
-        <div id="controls" class="absolute bottom-[30px] left-1/2 -translate-x-1/2 z-30 flex gap-4">
-            <button class="control-btn" onclick="toggleRotation()">Auto-Rotate</button>
-            <button class="control-btn" onclick="toggleInfo()">Info</button>
-            <button class="control-btn" onclick="randomizeNetwork()">Randomize</button>
-            <button class="control-btn" onclick="resetView()">Reset View</button>
-        </div>
+        <!-- 3. AI (AI Prompt Simulator) -->
+        <a href="./AI-Prompt-Simulator/index.html" data-project="AI" class="project-world absolute top-[10%] right-[10%] w-32 h-32 md:w-40 md:h-40 group z-10 block">
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-blue-400 to-violet-500 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
+                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-violet-400 animate-pulse"></div>
+                <div class="text-base md:text-xl font-bold font-header text-white">AI</div>
+                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">Prompt Intelligence</div>
+                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
+                    <span>Explore</span>
+                    <span>↗</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 4. Project Lumina (Project-Lumina) -->
+        <a href="./Project-Lumina/index.html" data-project="Project Lumina" class="project-world absolute bottom-[10%] left-[8%] w-32 h-32 md:w-44 md:h-44 group z-10 block">
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-pink-500 to-red-500 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
+                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-red-400 animate-pulse"></div>
+                <div class="text-base md:text-xl font-bold font-header text-white">Project Lumina</div>
+                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">Immersive Web</div>
+                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
+                    <span>Explore</span>
+                    <span>↗</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 5. Memory Grid (Drag-Drop Editors) -->
+        <a href="./Drag-Drop-Editors/index.html" data-project="Memory Grid" class="project-world absolute bottom-[26%] left-[28%] w-28 h-28 md:w-32 md:h-32 group z-10 block">
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-emerald-400 to-cyan-400 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
+                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-emerald-300 animate-pulse"></div>
+                <div class="text-base md:text-lg font-bold font-header text-white">Memory Grid</div>
+                <div class="mt-1 md:mt-2 text-[9px] md:text-xs text-white/60 leading-relaxed font-mono">Cognitive Lab</div>
+                <div class="mt-3 md:mt-5 flex items-center justify-between text-[8px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
+                    <span>Explore</span>
+                    <span>↗</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 6. Typovelocity (Neural Keyboard Simulator) -->
+        <a href="./Typovelocity/index.html" data-project="Typovelocity" class="project-world absolute top-[35%] left-[12%] w-32 h-32 md:w-40 md:h-40 group z-10 block">
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-amber-400 to-orange-500 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
+                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-amber-400 animate-pulse"></div>
+                <div class="text-base md:text-xl font-bold font-header text-white">Typovelocity</div>
+                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">Speed Trainer</div>
+                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
+                    <span>Explore</span>
+                    <span>↗</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 7. VR Experience -->
+        <a href="#" data-project="VR Experience" class="project-world absolute top-[22%] left-[24%] w-28 h-28 md:w-36 md:h-36 group z-10 block">
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-cyan-500 to-indigo-500 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
+                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-cyan-400 animate-pulse"></div>
+                <div class="text-base md:text-xl font-bold font-header text-white">VR Experience</div>
+                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">Immersive XR</div>
+                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
+                    <span>Explore</span>
+                    <span>↗</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 8. IoT Dashboard -->
+        <a href="#" data-project="IoT Dashboard" class="project-world absolute top-[25%] right-[20%] w-28 h-28 md:w-36 md:h-36 group z-10 block">
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-teal-400 to-emerald-500 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
+                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-teal-300 animate-pulse"></div>
+                <div class="text-base md:text-xl font-bold font-header text-white">IoT Dashboard</div>
+                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">Hardware Tracker</div>
+                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
+                    <span>Explore</span>
+                    <span>↗</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 9. Neural Compiler -->
+        <a href="#" data-project="Neural Compiler" class="project-world absolute bottom-[22%] right-[26%] w-28 h-28 md:w-36 md:h-36 group z-10 block">
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-fuchsia-500 to-rose-500 opacity-80 blur-2xl transition duration-500 group-hover:scale-125"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[2rem] border border-white/10 bg-black/40 p-4 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-4 group-hover:border-cyan-300/40">
+                <div class="absolute right-4 top-4 h-2 w-2 md:h-3 md:w-3 rounded-full bg-rose-400 animate-pulse"></div>
+                <div class="text-base md:text-xl font-bold font-header text-white">Neural Compiler</div>
+                <div class="mt-1 md:mt-2 text-[10px] md:text-sm text-white/60 leading-relaxed font-mono">Code Optimizer</div>
+                <div class="mt-3 md:mt-5 flex items-center justify-between text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-mono">
+                    <span>Explore</span>
+                    <span>↗</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 10. Coming Soon 1 -->
+        <a href="#" data-project="Coming Soon 1" class="project-world absolute top-[8%] left-[26%] w-24 h-24 md:w-28 md:h-28 group z-10 block">
+            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-gray-700 to-gray-900 opacity-40 blur-xl transition duration-500 group-hover:scale-110"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[1.5rem] border border-white/5 bg-black/50 p-3 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-2 group-hover:border-gray-500/30">
+                <div class="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-gray-500"></div>
+                <div class="text-xs md:text-sm font-bold font-header text-white/40">Coming Soon</div>
+                <div class="mt-1 text-[8px] md:text-[10px] text-white/30 leading-relaxed font-mono">Satellite Node 01</div>
+                <div class="mt-2 flex items-center justify-between text-[8px] md:text-[9px] uppercase tracking-[0.15em] text-white/20 font-mono">
+                    <span>Pending</span>
+                    <span>⋯</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 11. Coming Soon 2 -->
+        <a href="#" data-project="Coming Soon 2" class="project-world absolute top-[18%] right-[32%] w-24 h-24 md:w-28 md:h-28 group z-10 block">
+            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-gray-700 to-gray-900 opacity-40 blur-xl transition duration-500 group-hover:scale-110"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[1.5rem] border border-white/5 bg-black/50 p-3 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-2 group-hover:border-gray-500/30">
+                <div class="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-gray-500"></div>
+                <div class="text-xs md:text-sm font-bold font-header text-white/40">Coming Soon</div>
+                <div class="mt-1 text-[8px] md:text-[10px] text-white/30 leading-relaxed font-mono">Satellite Node 02</div>
+                <div class="mt-2 flex items-center justify-between text-[8px] md:text-[9px] uppercase tracking-[0.15em] text-white/20 font-mono">
+                    <span>Pending</span>
+                    <span>⋯</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 12. Coming Soon 3 -->
+        <a href="#" data-project="Coming Soon 3" class="project-world absolute top-[22%] left-[6%] w-24 h-24 md:w-28 md:h-28 group z-10 block">
+            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-gray-700 to-gray-900 opacity-40 blur-xl transition duration-500 group-hover:scale-110"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[1.5rem] border border-white/5 bg-black/50 p-3 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-2 group-hover:border-gray-500/30">
+                <div class="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-gray-500"></div>
+                <div class="text-xs md:text-sm font-bold font-header text-white/40">Coming Soon</div>
+                <div class="mt-1 text-[8px] md:text-[10px] text-white/30 leading-relaxed font-mono">Satellite Node 03</div>
+                <div class="mt-2 flex items-center justify-between text-[8px] md:text-[9px] uppercase tracking-[0.15em] text-white/20 font-mono">
+                    <span>Pending</span>
+                    <span>⋯</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 13. Coming Soon 4 -->
+        <a href="#" data-project="Coming Soon 4" class="project-world absolute top-[42%] right-[8%] w-24 h-24 md:w-28 md:h-28 group z-10 block">
+            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-gray-700 to-gray-900 opacity-40 blur-xl transition duration-500 group-hover:scale-110"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[1.5rem] border border-white/5 bg-black/50 p-3 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-2 group-hover:border-gray-500/30">
+                <div class="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-gray-500"></div>
+                <div class="text-xs md:text-sm font-bold font-header text-white/40">Coming Soon</div>
+                <div class="mt-1 text-[8px] md:text-[10px] text-white/30 leading-relaxed font-mono">Satellite Node 04</div>
+                <div class="mt-2 flex items-center justify-between text-[8px] md:text-[9px] uppercase tracking-[0.15em] text-white/20 font-mono">
+                    <span>Pending</span>
+                    <span>⋯</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 14. Coming Soon 5 -->
+        <a href="#" data-project="Coming Soon 5" class="project-world absolute bottom-[35%] right-[10%] w-24 h-24 md:w-28 md:h-28 group z-10 block">
+            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-gray-700 to-gray-900 opacity-40 blur-xl transition duration-500 group-hover:scale-110"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[1.5rem] border border-white/5 bg-black/50 p-3 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-2 group-hover:border-gray-500/30">
+                <div class="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-gray-500"></div>
+                <div class="text-xs md:text-sm font-bold font-header text-white/40">Coming Soon</div>
+                <div class="mt-1 text-[8px] md:text-[10px] text-white/30 leading-relaxed font-mono">Satellite Node 05</div>
+                <div class="mt-2 flex items-center justify-between text-[8px] md:text-[9px] uppercase tracking-[0.15em] text-white/20 font-mono">
+                    <span>Pending</span>
+                    <span>⋯</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 15. Coming Soon 6 -->
+        <a href="#" data-project="Coming Soon 6" class="project-world absolute bottom-[6%] left-[22%] w-24 h-24 md:w-28 md:h-28 group z-10 block">
+            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-gray-700 to-gray-900 opacity-40 blur-xl transition duration-500 group-hover:scale-110"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[1.5rem] border border-white/5 bg-black/50 p-3 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-2 group-hover:border-gray-500/30">
+                <div class="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-gray-500"></div>
+                <div class="text-xs md:text-sm font-bold font-header text-white/40">Coming Soon</div>
+                <div class="mt-1 text-[8px] md:text-[10px] text-white/30 leading-relaxed font-mono">Satellite Node 06</div>
+                <div class="mt-2 flex items-center justify-between text-[8px] md:text-[9px] uppercase tracking-[0.15em] text-white/20 font-mono">
+                    <span>Pending</span>
+                    <span>⋯</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 16. Coming Soon 7 -->
+        <a href="#" data-project="Coming Soon 7" class="project-world absolute bottom-[10%] right-[42%] w-24 h-24 md:w-28 md:h-28 group z-10 block">
+            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-gray-700 to-gray-900 opacity-40 blur-xl transition duration-500 group-hover:scale-110"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[1.5rem] border border-white/5 bg-black/50 p-3 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-2 group-hover:border-gray-500/30">
+                <div class="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-gray-500"></div>
+                <div class="text-xs md:text-sm font-bold font-header text-white/40">Coming Soon</div>
+                <div class="mt-1 text-[8px] md:text-[10px] text-white/30 leading-relaxed font-mono">Satellite Node 07</div>
+                <div class="mt-2 flex items-center justify-between text-[8px] md:text-[9px] uppercase tracking-[0.15em] text-white/20 font-mono">
+                    <span>Pending</span>
+                    <span>⋯</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 17. Coming Soon 8 -->
+        <a href="#" data-project="Coming Soon 8" class="project-world absolute bottom-[28%] left-[14%] w-24 h-24 md:w-28 md:h-28 group z-10 block">
+            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-gray-700 to-gray-900 opacity-40 blur-xl transition duration-500 group-hover:scale-110"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[1.5rem] border border-white/5 bg-black/50 p-3 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-2 group-hover:border-gray-500/30">
+                <div class="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-gray-500"></div>
+                <div class="text-xs md:text-sm font-bold font-header text-white/40">Coming Soon</div>
+                <div class="mt-1 text-[8px] md:text-[10px] text-white/30 leading-relaxed font-mono">Satellite Node 08</div>
+                <div class="mt-2 flex items-center justify-between text-[8px] md:text-[9px] uppercase tracking-[0.15em] text-white/20 font-mono">
+                    <span>Pending</span>
+                    <span>⋯</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 18. Coming Soon 9 -->
+        <a href="#" data-project="Coming Soon 9" class="project-world absolute top-[48%] left-[24%] w-24 h-24 md:w-28 md:h-28 group z-10 block">
+            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-gray-700 to-gray-900 opacity-40 blur-xl transition duration-500 group-hover:scale-110"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[1.5rem] border border-white/5 bg-black/50 p-3 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-2 group-hover:border-gray-500/30">
+                <div class="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-gray-500"></div>
+                <div class="text-xs md:text-sm font-bold font-header text-white/40">Coming Soon</div>
+                <div class="mt-1 text-[8px] md:text-[10px] text-white/30 leading-relaxed font-mono">Satellite Node 09</div>
+                <div class="mt-2 flex items-center justify-between text-[8px] md:text-[9px] uppercase tracking-[0.15em] text-white/20 font-mono">
+                    <span>Pending</span>
+                    <span>⋯</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 19. Coming Soon 10 -->
+        <a href="#" data-project="Coming Soon 10" class="project-world absolute bottom-[45%] right-[22%] w-24 h-24 md:w-28 md:h-28 group z-10 block">
+            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-gray-700 to-gray-900 opacity-40 blur-xl transition duration-500 group-hover:scale-110"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[1.5rem] border border-white/5 bg-black/50 p-3 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-2 group-hover:border-gray-500/30">
+                <div class="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-gray-500"></div>
+                <div class="text-xs md:text-sm font-bold font-header text-white/40">Coming Soon</div>
+                <div class="mt-1 text-[8px] md:text-[10px] text-white/30 leading-relaxed font-mono">Satellite Node 10</div>
+                <div class="mt-2 flex items-center justify-between text-[8px] md:text-[9px] uppercase tracking-[0.15em] text-white/20 font-mono">
+                    <span>Pending</span>
+                    <span>⋯</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- 20. Coming Soon 11 -->
+        <a href="#" data-project="Coming Soon 11" class="project-world absolute top-[5%] right-[22%] w-24 h-24 md:w-28 md:h-28 group z-10 block">
+            <div class="absolute inset-0 rounded-[1.5rem] bg-gradient-to-br from-gray-700 to-gray-900 opacity-40 blur-xl transition duration-500 group-hover:scale-110"></div>
+            <div class="relative flex h-full w-full flex-col justify-end rounded-[1.5rem] border border-white/5 bg-black/50 p-3 backdrop-blur-2xl transition duration-500 group-hover:-translate-y-2 group-hover:border-gray-500/30">
+                <div class="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-gray-500"></div>
+                <div class="text-xs md:text-sm font-bold font-header text-white/40">Coming Soon</div>
+                <div class="mt-1 text-[8px] md:text-[10px] text-white/30 leading-relaxed font-mono">Satellite Node 11</div>
+                <div class="mt-2 flex items-center justify-between text-[8px] md:text-[9px] uppercase tracking-[0.15em] text-white/20 font-mono">
+                    <span>Pending</span>
+                    <span>⋯</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Neural Connections (SVG Stream Lines) -->
+        <svg class="absolute inset-0 h-full w-full opacity-40 z-0 pointer-events-none">
+            <!-- Active Node Connections -->
+            <line x1="50%" y1="50%" x2="47%" y2="21%" stroke="url(#grad1)" stroke-width="2" />
+            <line x1="50%" y1="50%" x2="87%" y2="81%" stroke="url(#grad1)" stroke-width="2" />
+            <line x1="50%" y1="50%" x2="85%" y2="20%" stroke="url(#grad1)" stroke-width="2" />
+            <line x1="50%" y1="50%" x2="17%" y2="85%" stroke="url(#grad1)" stroke-width="2" />
+            <line x1="50%" y1="50%" x2="33%" y2="70%" stroke="url(#grad1)" stroke-width="2" />
+            <line x1="50%" y1="50%" x2="21%" y2="44%" stroke="url(#grad1)" stroke-width="2" />
+            <line x1="50%" y1="50%" x2="32%" y2="30%" stroke="url(#grad1)" stroke-width="2" />
+            <line x1="50%" y1="50%" x2="75%" y2="33%" stroke="url(#grad1)" stroke-width="2" />
+            <line x1="50%" y1="50%" x2="69%" y2="72%" stroke="url(#grad1)" stroke-width="2" />
+
+            <!-- Coming Soon Node Connections (Dashed) -->
+            <line x1="50%" y1="50%" x2="31%" y2="14%" stroke="url(#grad2)" stroke-dasharray="5,5" stroke-width="1.5" />
+            <line x1="50%" y1="50%" x2="63%" y2="24%" stroke="url(#grad2)" stroke-dasharray="5,5" stroke-width="1.5" />
+            <line x1="50%" y1="50%" x2="12%" y2="28%" stroke="url(#grad2)" stroke-dasharray="5,5" stroke-width="1.5" />
+            <line x1="50%" y1="50%" x2="88%" y2="48%" stroke="url(#grad2)" stroke-dasharray="5,5" stroke-width="1.5" />
+            <line x1="50%" y1="50%" x2="86%" y2="60%" stroke="url(#grad2)" stroke-dasharray="5,5" stroke-width="1.5" />
+            <line x1="50%" y1="50%" x2="28%" y2="89%" stroke="url(#grad2)" stroke-dasharray="5,5" stroke-width="1.5" />
+            <line x1="50%" y1="50%" x2="53%" y2="85%" stroke="url(#grad2)" stroke-dasharray="5,5" stroke-width="1.5" />
+            <line x1="50%" y1="50%" x2="20%" y2="67%" stroke="url(#grad2)" stroke-dasharray="5,5" stroke-width="1.5" />
+            <line x1="50%" y1="50%" x2="30%" y2="55%" stroke="url(#grad2)" stroke-dasharray="5,5" stroke-width="1.5" />
+            <line x1="50%" y1="50%" x2="73%" y2="50%" stroke="url(#grad2)" stroke-dasharray="5,5" stroke-width="1.5" />
+            <line x1="50%" y1="50%" x2="73%" y2="11%" stroke="url(#grad2)" stroke-dasharray="5,5" stroke-width="1.5" />
+
+            <defs>
+                <linearGradient id="grad1">
+                    <stop offset="0%" stop-color="#22d3ee" />
+                    <stop offset="100%" stop-color="#a855f7" />
+                </linearGradient>
+                <linearGradient id="grad2">
+                    <stop offset="0%" stop-color="#4b5563" />
+                    <stop offset="100%" stop-color="#1f2937" />
+                </linearGradient>
+            </defs>
+        </svg>
     </section>
 
     <!-- Bottom Panels -->

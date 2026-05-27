@@ -83,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Sound Toggle Button
     const soundToggle = document.getElementById('sound-toggle');
-    const audioIcon = document.getElementById('audio-icon');
     if (soundToggle) {
         soundToggle.addEventListener('click', () => {
             soundEnabled = !soundEnabled;
@@ -101,36 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------
     // INTERACTIVE PROJECT WORLDS EVENT LISTENERS & MODALS
     // -------------------------------------------------------------
-    // -------------------------------------------------------------
-    // 3D NEURAL NETWORK / INTERACTIVE COSMOS
-    // -------------------------------------------------------------
-    const projects = [
-        { title: 'AI', color: '#00d4ff' },
-        { title: 'Nexus', color: '#0099ff' },
-        { title: 'Project Lumina', color: '#00ccff' },
-        { title: 'Typovelocity', color: '#0066ff' },
-        { title: 'Memory Grid', color: '#00b3ff' },
-        { title: 'NEXUS OS', color: '#0080ff' },
-        { title: 'VR Experience', color: '#004dff' },
-        { title: 'IoT Dashboard', color: '#00b3ff' },
-        { title: 'Neural Compiler', color: '#0080ff' },
-        { title: 'Coming Soon 1', color: '#004dff' },
-        { title: 'Coming Soon 2', color: '#004dff' },
-        { title: 'Coming Soon 3', color: '#004dff' },
-        { title: 'Coming Soon 4', color: '#004dff' },
-        { title: 'Coming Soon 5', color: '#004dff' },
-        { title: 'Coming Soon 6', color: '#004dff' },
-        { title: 'Coming Soon 7', color: '#004dff' },
-        { title: 'Coming Soon 8', color: '#004dff' },
-        { title: 'Coming Soon 9', color: '#004dff' },
-        { title: 'Coming Soon 10', color: '#004dff' },
-        { title: 'Coming Soon 11', color: '#004dff' },
-        { title: 'Coming Soon 12', color: '#004dff' },
-        { title: 'Coming Soon 13', color: '#004dff' },
-        { title: 'Coming Soon 14', color: '#004dff' },
-        { title: 'Coming Soon 15', color: '#004dff' }
-    ];
-
     const articles = {
         'NEXUS OS': {
             title: 'NEXUS OS',
@@ -275,228 +244,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const network = document.getElementById('neural-network');
     const modal = document.getElementById('project-modal');
     const modalContent = modal ? modal.querySelector('.modal-content') : null;
-    const universeSection = document.getElementById('universe-section');
-    const customCursor = document.getElementById('custom-cursor');
-    const infoPanel = document.getElementById('info-panel');
-
-    let nodes = [];
-    let connections = [];
-    let isRotating = true; // Auto-rotate active by default
-    let mouseX = 0;
-    let mouseY = 0;
     let currentImageIndex = 0;
-    let mouseActive = false;
 
-    // Initialize 3D Network
-    function initializeNetwork() {
-        if (!network || !universeSection) return;
-
-        // Reset the rotation transform so client rect calculations are correct
-        const originalTransform = network.style.transform;
-        network.style.transform = '';
-        
-        network.innerHTML = '';
-        nodes = [];
-        connections = [];
-
-        projects.forEach((project, index) => {
-            createProjectNode(project, index);
-        });
-        createConnections();
-        createParticles();
-        createSpaceEffects();
-        updateStats();
-
-        network.style.transform = originalTransform;
-    }
-
-    function createProjectNode(project, index) {
-        const node = document.createElement('div');
-        node.className = 'project-node';
-        node.innerHTML = `<div class="project-title">${project.title}</div>`;
-
-        // Fibonacci sphere distribution for positioning in 3D
-        const phi = Math.acos(1 - (2 * (index + 1)) / projects.length);
-        const theta = Math.PI * (1 + Math.sqrt(5)) * (index + 1);
-
-        // Use offsetWidth if available, otherwise fallback to viewport width to prevent radius = 0 during early execution
-        const referenceWidth = universeSection.offsetWidth || window.innerWidth || 800;
-        const radius = Math.min(280, referenceWidth * 0.32); // responsive radius
-        const x = radius * Math.sin(phi) * Math.cos(theta);
-        const y = radius * Math.sin(phi) * Math.sin(theta) * 0.8; // slightly squashed vertically
-        const z = radius * Math.cos(phi);
-        
-        node.style.left = `calc(50% + ${x}px)`;
-        node.style.top = `calc(50% + ${y}px)`;
-        node.style.transform = `translateZ(${z}px)`;
-
-        // Click opens modal
-        node.addEventListener('click', (e) => {
-            e.stopPropagation();
-            playClickSound();
-            openModal(project.title);
-        });
-        
-        node.addEventListener('mouseenter', () => {
-            playHoverSound();
-        });
-
-        network.appendChild(node);
-        nodes.push({ element: node, project, x, y, z });
-    }
-
-    function createConnections() {
-        if (!network || nodes.length === 0) return;
-        const containerRect = network.getBoundingClientRect();
-        
-        for (let i = 0; i < nodes.length; i++) {
-            for (let j = i + 1; j < nodes.length; j++) {
-                const distance = Math.sqrt(
-                    Math.pow(nodes[i].x - nodes[j].x, 2) +
-                    Math.pow(nodes[i].y - nodes[j].y, 2) +
-                    Math.pow(nodes[i].z - nodes[j].z, 2)
-                );
-                
-                // Keep connection lines looking clean and constellation-like (density-optimized)
-                const maxDist = nodes.length > 15 ? 320 : 450;
-                const probability = nodes.length > 15 ? 0.12 : 0.45;
-                
-                if (distance < maxDist && Math.random() < probability) {
-                    createConnection(nodes[i], nodes[j], containerRect);
-                }
-            }
-        }
-    }
-
-    function createConnection(nodeA, nodeB, containerRect) {
-        const line = document.createElement('div');
-        line.className = 'connection-line';
-
-        const rect1 = nodeA.element.getBoundingClientRect();
-        const rect2 = nodeB.element.getBoundingClientRect();
-
-        const x1 = rect1.left + rect1.width / 2 - containerRect.left;
-        const y1 = rect1.top + rect1.height / 2 - containerRect.top;
-        const x2 = rect2.left + rect2.width / 2 - containerRect.left;
-        const y2 = rect2.top + rect2.height / 2 - containerRect.top;
-
-        const distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-        const angle = (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI;
-
-        line.style.width = `${distance}px`;
-        line.style.left = `${x1}px`;
-        line.style.top = `${y1}px`;
-        line.style.transform = `rotate(${angle}deg)`;
-        line.style.transformOrigin = '0 50%';
-
-        network.appendChild(line);
-        connections.push(line);
-    }
-
-    function createParticles() {
-        if (!universeSection) return;
-        
-        // Remove existing particles to prevent accumulation
-        const existingParticles = universeSection.querySelectorAll('.particle, .quantum-particle');
-        existingParticles.forEach(p => p.remove());
-        
-        const width = universeSection.offsetWidth || window.innerWidth || 1200;
-        const height = universeSection.offsetHeight || 800;
-        
-        for (let i = 0; i < 20; i++) {
-            setTimeout(() => {
-                if (!universeSection) return;
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * width + 'px';
-                particle.style.top = height + 10 + 'px';
-                
-                particle.style.setProperty('--float-distance', `-${height + 80}px`);
-                particle.style.setProperty('--float-x', `${(Math.random() - 0.5) * 300}px`);
-                particle.style.animationDelay = Math.random() * 8 + 's';
-                particle.style.animationDuration = Math.random() * 6 + 8 + 's';
-
-                universeSection.appendChild(particle);
-            }, i * 400);
-        }
-        for (let i = 0; i < 15; i++) {
-            setTimeout(() => {
-                if (!universeSection) return;
-                const qParticle = document.createElement('div');
-                qParticle.className = 'quantum-particle';
-                qParticle.style.left = Math.random() * width + 'px';
-                qParticle.style.top = Math.random() * height + 'px';
-                
-                qParticle.style.setProperty('--drift-x', `${(Math.random() - 0.5) * 400}px`);
-                qParticle.style.setProperty('--drift-y', `${(Math.random() - 0.5) * 400}px`);
-                qParticle.style.animationDelay = Math.random() * 12 + 's';
-                qParticle.style.animationDuration = Math.random() * 8 + 12 + 's';
-
-                universeSection.appendChild(qParticle);
-            }, i * 500);
-        }
-    }
-
-    function spawnSingleParticle() {
-        if (!universeSection) return;
-        const width = universeSection.offsetWidth || window.innerWidth || 1200;
-        const height = universeSection.offsetHeight || 800;
-        
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * width + 'px';
-        particle.style.top = height + 10 + 'px';
-        
-        particle.style.setProperty('--float-distance', `-${height + 80}px`);
-        particle.style.setProperty('--float-x', `${(Math.random() - 0.5) * 300}px`);
-        particle.style.animationDuration = Math.random() * 6 + 8 + 's';
-
-        universeSection.appendChild(particle);
-
-        setTimeout(() => {
-            particle.remove();
-        }, 14000);
-    }
-
-    function createSpaceEffects() {
-        if (!universeSection) return;
-        
-        // Remove existing effects
-        const existingEffects = universeSection.querySelectorAll('.nebula-effect, .wormhole');
-        existingEffects.forEach(e => e.remove());
-        
-        const width = universeSection.offsetWidth || window.innerWidth || 1200;
-        const height = universeSection.offsetHeight || 800;
-
-        for (let i = 0; i < 3; i++) {
-            const nebula = document.createElement('div');
-            nebula.className = 'nebula-effect';
-            nebula.style.left = Math.random() * width + 'px';
-            nebula.style.top = Math.random() * height + 'px';
-            nebula.style.animationDelay = Math.random() * 20 + 's';
-            universeSection.appendChild(nebula);
-        }
-        for (let i = 0; i < 2; i++) {
-            const wormhole = document.createElement('div');
-            wormhole.className = 'wormhole';
-            wormhole.style.left = Math.random() * width + 'px';
-            wormhole.style.top = Math.random() * height + 'px';
-            wormhole.style.animationDelay = Math.random() * 8 + 's';
-            universeSection.appendChild(wormhole);
-        }
-    }
-
-    function updateStats() {
-        const nodeCountEl = document.getElementById('node-count');
-        const connectionCountEl = document.getElementById('connection-count');
-        if (nodeCountEl) nodeCountEl.textContent = nodes.length;
-        if (connectionCountEl) connectionCountEl.textContent = connections.length;
-    }
-
-    // Modal Content Loading & Control
     function loadArticle(projectTitle) {
         const article = articles[projectTitle];
         if (!article || !modalContent) return;
@@ -565,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateImage();
         });
 
-        closeBtn.addEventListener('click', window.closeModal);
+        closeBtn.addEventListener('click', closeModal);
         
         liveBtn.addEventListener('click', () => {
             playClickSound();
@@ -585,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (e.key === 'ArrowRight') {
                 if (article.images && article.images.length > 1) nextBtn.click();
             } else if (e.key === 'Escape') {
-                window.closeModal();
+                closeModal();
             }
         });
     }
@@ -611,100 +362,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Attach control handlers to window for inline onclick attributes in HTML
-    window.toggleRotation = function() {
-        playClickSound();
-        isRotating = !isRotating;
-    };
-    
-    window.toggleInfo = function() {
-        playClickSound();
-        if (infoPanel) {
-            infoPanel.classList.toggle('active');
-        }
-    };
-    
-    window.randomizeNetwork = function() {
-        playClickSound();
-        if (!universeSection || !network) return;
-        
-        connections.forEach(line => line.remove());
-        connections = [];
-        
-        const width = universeSection.offsetWidth;
-        const height = universeSection.offsetHeight;
-        
-        const originalTransform = network.style.transform;
-        network.style.transform = '';
-
-        nodes.forEach((node) => {
-            const randomX = (Math.random() - 0.5) * Math.min(500, width * 0.65);
-            const randomY = (Math.random() - 0.5) * Math.min(500, height * 0.65) * 0.8;
-            const randomZ = (Math.random() - 0.5) * 350;
-
-            node.x = randomX;
-            node.y = randomY;
-            node.z = randomZ;
-
-            node.element.style.left = `calc(50% + ${randomX}px)`;
-            node.element.style.top = `calc(50% + ${randomY}px)`;
-            node.element.style.transform = `translateZ(${randomZ}px)`;
-        });
-        
-        createConnections();
-        network.style.transform = originalTransform;
-        updateStats();
-    };
-    
-    window.resetView = function() {
-        playClickSound();
-        if (network) {
-            network.style.transform = '';
-            initializeNetwork();
-        }
-    };
-    
-    window.closeModal = function() {
+    function closeModal() {
         if (modal) {
             playClickSound();
             modal.style.display = 'none';
             document.body.style.overflow = '';
         }
-    };
+    }
 
     // Close modal on outside click
     if (modal) {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
-                window.closeModal();
+                closeModal();
             }
         });
     }
 
     // Keyboard Shortcuts listener
     document.addEventListener('keydown', (e) => {
-        if (modal && modal.style.display === 'flex') {
-            if (e.key === 'Escape') {
-                window.closeModal();
-            }
-            return;
-        }
-        
-        if (mouseActive) {
-            switch (e.key) {
-                case ' ':
-                    e.preventDefault();
-                    window.toggleRotation();
-                    break;
-                case 'i':
-                    window.toggleInfo();
-                    break;
-                case 'r':
-                    window.randomizeNetwork();
-                    break;
-            }
+        if (e.key === 'Escape') {
+            closeModal();
         }
     });
+
+    // Wire up project card events
+    const projectWorlds = document.querySelectorAll('.project-world');
+    projectWorlds.forEach(world => {
+        world.addEventListener('mouseenter', () => {
+            playHoverSound();
+        });
+        world.addEventListener('click', (e) => {
+            const projectKey = world.getAttribute('data-project');
+            if (projectKey) {
+                e.preventDefault(); // Prevent standard navigation
+                playClickSound();
+                openModal(projectKey); // Open modal instead
+            } else {
+                playClickSound();
+            }
+        });
+    });
+
+    // -------------------------------------------------------------
+    // CUSTOM CURSOR & PARTICLES
+    // -------------------------------------------------------------
+    const universeSection = document.getElementById('universe-section');
+    const customCursor = document.getElementById('custom-cursor');
+    let mouseActive = false;
 
     // Custom Cursor styling init
     if (customCursor) {
@@ -712,8 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
         customCursor.style.transition = 'opacity 0.3s ease, transform 0.1s ease';
     }
 
-    // Mouse events bound specifically to universeSection
-    if (universeSection && network) {
+    if (universeSection) {
         universeSection.style.cursor = 'none';
         
         universeSection.addEventListener('mouseenter', () => {
@@ -724,46 +428,82 @@ document.addEventListener('DOMContentLoaded', () => {
         universeSection.addEventListener('mouseleave', () => {
             if (customCursor) customCursor.style.opacity = '0';
             mouseActive = false;
-            if (!isRotating) {
-                network.style.transform = 'rotateY(0deg) rotateX(0deg)';
-            }
         });
 
         universeSection.addEventListener('mousemove', (e) => {
-            const rect = universeSection.getBoundingClientRect();
-            
             if (customCursor) {
+                // Adjust position relative to viewport
                 customCursor.style.left = e.clientX - 12 + 'px';
                 customCursor.style.top = e.clientY - 12 + 'px';
-            }
-
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            mouseX = (x / rect.width) * 2 - 1;
-            mouseY = (y / rect.height) * 2 - 1;
-
-            if (!isRotating) {
-                network.style.transform = `rotateY(${mouseX * 20}deg) rotateX(${-mouseY * 12}deg)`;
             }
         });
     }
 
-    // Window Resize listener - rebuild network to fit new container dimensions
-    window.addEventListener('resize', () => {
-        if (network && nodes.length > 0) {
-            initializeNetwork();
-        }
-    });
+    // Dynamic Floating Particles in Universe Section
+    function createParticles() {
+        if (!universeSection) return;
+        
+        const width = universeSection.offsetWidth || window.innerWidth || 1200;
+        const height = universeSection.offsetHeight || 800;
+        
+        // Spawn initial particles
+        for (let i = 0; i < 20; i++) {
+            setTimeout(() => {
+                if (!universeSection) return;
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * width + 'px';
+                particle.style.top = height + 10 + 'px';
+                
+                particle.style.setProperty('--float-distance', `-${height + 80}px`);
+                particle.style.setProperty('--float-x', `${(Math.random() - 0.5) * 300}px`);
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = Math.random() * 6 + 8 + 's';
 
-    // Render loop
-    let rotationAngle = 0;
+                universeSection.appendChild(particle);
+            }, i * 400);
+        }
+        for (let i = 0; i < 15; i++) {
+            setTimeout(() => {
+                if (!universeSection) return;
+                const qParticle = document.createElement('div');
+                qParticle.className = 'quantum-particle';
+                qParticle.style.left = Math.random() * width + 'px';
+                qParticle.style.top = Math.random() * height + 'px';
+                
+                qParticle.style.setProperty('--drift-x', `${(Math.random() - 0.5) * 400}px`);
+                qParticle.style.setProperty('--drift-y', `${(Math.random() - 0.5) * 400}px`);
+                qParticle.style.animationDelay = Math.random() * 12 + 's';
+                qParticle.style.animationDuration = Math.random() * 8 + 12 + 's';
+
+                universeSection.appendChild(qParticle);
+            }, i * 500);
+        }
+    }
+
+    function spawnSingleParticle() {
+        if (!universeSection) return;
+        const width = universeSection.offsetWidth || window.innerWidth || 1200;
+        const height = universeSection.offsetHeight || 800;
+        
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * width + 'px';
+        particle.style.top = height + 10 + 'px';
+        
+        particle.style.setProperty('--float-distance', `-${height + 80}px`);
+        particle.style.setProperty('--float-x', `${(Math.random() - 0.5) * 300}px`);
+        particle.style.animationDuration = Math.random() * 6 + 8 + 's';
+
+        universeSection.appendChild(particle);
+
+        setTimeout(() => {
+            particle.remove();
+        }, 14000);
+    }
+
+    // Render loop for cursor animations and particles spawning
     function animate() {
-        if (isRotating && network) {
-            rotationAngle += 0.25; // Smooth slow rotation
-            network.style.transform = `rotateY(${rotationAngle}deg) rotateX(${Math.sin(Date.now() * 0.001) * 3}deg)`;
-        }
-
         if (Math.random() < 0.03 && universeSection) {
             const currentParticles = universeSection.querySelectorAll('.particle').length;
             if (currentParticles < 25) {
@@ -781,24 +521,9 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(animate);
     }
 
-    // Initialize network nodes, connections and start animation
-    initializeNetwork();
+    // Trigger Particle Generation & animation loops
+    createParticles();
     animate();
-
-    // Trigger full initialization on window load to ensure all layouts and dimensions are fully computed
-    window.addEventListener('load', () => {
-        initializeNetwork();
-    });
-
-    // Auto-slide-in Info Panel after 1s, hide after 5s
-    setTimeout(() => {
-        if (infoPanel) {
-            infoPanel.classList.add('active');
-            setTimeout(() => {
-                infoPanel.classList.remove('active');
-            }, 6000);
-        }
-    }, 1000);
 
     // -------------------------------------------------------------
     // DYNAMIC EVENT FEED TIME TICKER
