@@ -1,6 +1,6 @@
-# The Living Workspace - FuturisticLab Portfolio
+Futuristic Lab 
 
-Welcome to the unified monorepo for **FuturisticLab** web experiments and tools. This repository hosts several client-side applications linked together by a central interactive portfolio hub, representing a "Living Workspace" innovation ecosystem interface.
+Welcome to the unified monorepo for **FuturisticLab** web experiments and tools. This repository hosts several client-side applications linked together by a central interactive portfolio hub, representing a "Living Workspace" innovation ecosystem interface. 
 
 ## Live Demo Hub
 Deploy this repository to **GitHub Pages** to host all projects simultaneously. Once deployed, the landing page index launches at the root, and each project is served out of its respective subfolder:
