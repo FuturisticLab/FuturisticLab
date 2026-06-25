@@ -1,9 +1,9 @@
 Futuristic Lab 
 
-Welcome to the unified repo for **FuturisticLab** web apps, experiments and tools. This repository hosts several client-side applications linked together by a central interactive portfolio hub, representing a "Living Workspace" innovation ecosystem interface. 
+Welcome to the unified repo for **FuturisticLab** web apps, experiments and tools. This repository hosts several client-side applications linked together by a central interactive portfolio hub, representing my personal Workspace. 
 
 ## Live Demo Hub
-Deploy this repository to **GitHub Pages** to host all projects simultaneously. Once deployed, the landing page index launches at the root, and each project is served out of its respective subfolder:
+
 
 👉 **Landing Portal**: `https://FuturisticLab.github.io/FuturisticLab/`
 
