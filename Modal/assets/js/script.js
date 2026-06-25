@@ -124,9 +124,9 @@ Developed practical knowledge in incident response, risk mitigation, and securit
 </p>
         `,
         images: [
-          { src: 'assets/images/NTAI.png', caption: 'Network Technology Academy' },
-          { src: 'assets/images/ComptiaSecurity.png', caption: 'Security +' },
-          
+          { src: 'assets/images/ntai_certificate.png', caption: 'Network Technology Academy' },
+          { src: 'assets/images/20260615_000635.jpg ', caption: 'Security +' },
+          { src: 'assets/images/Foundations of CyberSecurity Google.png ', caption: 'Google Cybersecurity Fundamentals' },
         ],
         liveLink: 'https://futuristiclab.github.io/FuturisticLab.github.io./',
         githubLink: 'https://futuristiclab.github.io/FuturisticLab.github.io./',
